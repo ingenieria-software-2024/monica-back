@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { CartItem } from './cart-item.interface'; // Importar la interfaz correctamente
+import { CartItem } from './cart-item.interface';
 import { AddItemDto } from './dto/add-item.dto';
 import { UpdateQuantityDto } from './dto/update-quantity.dto';
 
@@ -15,7 +15,7 @@ export class CartService {
     const cart: CartItem[] = session.cart || [];
     const itemIndex = cart.findIndex(
       (item) => item.productId === addItemDto.productId,
-    ); // Se corrigió la coma
+    );
 
     if (itemIndex > -1) {
       cart[itemIndex].quantity += addItemDto.quantity;
