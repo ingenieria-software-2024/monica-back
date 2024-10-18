@@ -18,12 +18,12 @@ export class CartController {
 
   @Get()
   getCart(@Session() session) {
-    return this.cartService.getCart(session);
+    return this.cartService.getCart(session.userId); // Cambia 'session' por 'session.userId' si está definido
   }
 
   @Post('add')
   addToCart(@Body() addItemDto: AddItemDto, @Session() session) {
-    return this.cartService.addToCart(session, addItemDto);
+    return this.cartService.addToCart(session.userId, addItemDto); // Cambia 'session' por 'session.userId' si está definido
   }
 
   @Put('update-quantity')
@@ -31,16 +31,16 @@ export class CartController {
     @Body() updateQuantityDto: UpdateQuantityDto,
     @Session() session,
   ) {
-    return this.cartService.updateQuantity(session, updateQuantityDto);
+    return this.cartService.updateQuantity(session.userId, updateQuantityDto); // Asegúrate de que el método esté en el servicio
   }
 
   @Delete('remove/:productId')
   removeFromCart(@Param('productId') productId: string, @Session() session) {
-    return this.cartService.removeFromCart(session, productId);
+    return this.cartService.removeFromCart(session.userId, Number(productId)); // Convierte productId a número
   }
 
   @Post('checkout')
   checkout(@Session() session) {
-    return this.cartService.checkout(session);
+    return this.cartService.checkout(session.userId); // Asegúrate de que el método esté en el servicio
   }
 }
