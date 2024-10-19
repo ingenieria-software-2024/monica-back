@@ -26,4 +26,14 @@ export interface ICategoryService {
    * @returns {Promise<Category>}
    */
   getCategoryById(id: number): Promise<Category>;
+
+  /**
+   * Actualiza una categoria por su identificador.
+   *
+   * @param {number} id El identificador de la categoria.
+   * @param {Category} data Los datos para actualizar la categoria.
+   *
+   * @returns {Promise<Category>}
+   */
+  updateCategoryByid(id: number, data: Category): Promise<Category>;
 }
