@@ -1,6 +1,22 @@
-import { User } from '@prisma/client';
+import { Prisma, User } from '@prisma/client';
 
-export interface IUserService {
+export interface IUsersService {
+  /**
+   * Devuelve un listado con todos los usuarios
+   *
+   * @returns {Promise<Array<User>>}
+   */
+  getAllUsers(): Promise<Array<User>>;
+
+  /**
+   * Devuelve un usuario por su id
+   *
+   * @param {number} id
+   *
+   * @returns {Promise<Users>}
+   */
+  getUserById(id: number): Promise<User>;
+
   /**
    * Crea un nuevo usuario
    * @param {string} username Nombre de usuario
@@ -9,20 +25,5 @@ export interface IUserService {
    *
    * @returns {Promise<User>}
    */
-  createUser(username: string, email: string, password: string): Promise<User>;
-
-  /**
-   * Devuelve un listado con todos los usuarios
-   *
-   * return {Promise<Array<Users>>}
-   */
-  getAllUsers(): Promise<Array<User>>;
-
-  /**
-   * devuelve un usuario por su id
-   * @param {number} id
-   *
-   * @returns {Promise<Users>}
-   */
-  getUserById(id: number): Promise<User>;
+  createUser(data: Prisma.UserCreateInput): Promise<User>;
 }
