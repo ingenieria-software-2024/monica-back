@@ -54,8 +54,22 @@ export class ProductService implements IProductService {
 
     return await this.#products.create({ data: product });
   }
-
-  async getProduct(id: number): Promise<Product> {
+  async getProducts(): Promise<Array<Product>> {
+    return await this.#products.findMany();
+  }
+  async getProductById(id: number): Promise<Product> {
     return await this.#products.findUnique({ where: { id } });
+  }
+  async updateProductById(id: number, data: Product) {
+    return await this.#products.update({
+      where: { id },
+      data: {
+        name: data.name,
+        price: data.price,
+        imageUrl: data.imageUrl,
+        description: data.description,
+        
+      },
+    });
   }
 }

@@ -29,5 +29,22 @@ export interface IProductService {
    *
    * @returns {Promise<Product>}
    */
-  getProduct(id: number): Promise<Product>;
+  getProductById(id: number): Promise<Product>;
+
+  /**
+   * Obtiene un listado completo de las Products.
+   *
+   * @returns {Promise<Array<Product>>}
+   */
+  getProducts(): Promise<Array<Product>>;
+  /**
+   * Actualiza una Product por su identificador.
+   *
+   * @param {number} id El identificador deL Product.
+   * @param {Product} data Los datos para actualizar el Product
+   *
+   * @returns {Promise<Product>}
+   */
+  updateProductById(id: number, data: Product): Promise<Product>;
+
 }
