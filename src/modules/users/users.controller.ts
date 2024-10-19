@@ -16,20 +16,32 @@ import { UsersService } from './users.service';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
+  /**
+   * @returns todos los usuarios
+   */
   @Get()
   async getAllUsers() {
-    return this.usersService.findAllUsers();
+    return this.usersService.getAllUsers();
   }
 
+  /**
+   * @param id
+   * @returns un usuario según la id proporcionada
+   */
   @Get(':id')
   async getUserById(@Param('id') id: string) {
-    const user = await this.usersService.findUserById(parseInt(id));
+    const user = await this.usersService.getUserById(parseInt(id));
     if (!user) {
       throw new NotFoundException(`Usuario con id ${id} no encontrado`);
     }
     return user;
   }
 
+  /**
+   * @param id
+   * @param createUserDto
+   * @returns registra un nuevo usuario
+   */
   @Post('register')
   @UsePipes(
     new ValidationPipe({
