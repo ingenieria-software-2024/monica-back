@@ -10,26 +10,28 @@ import {
 } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UsersService } from './users.service';
+import { User } from '@prisma/client';
 
 @Controller('/users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(private readonly service: UsersService) {}
 
   /**
-   * @returns todos los usuarios
+   * @returns {Promise<Array<User>>} todos los usuarios
    */
   @Get()
-  async getAllUsers() {
-    return this.usersService.getAllUsers();
+  async getAllUsers(): Promise<Array<User>> {
+    return this.service.getAllUsers();
   }
 
   /**
    * @param id
-   * @returns un usuario según la id proporcionada
+   *
+   * @returns {Promise<User>} un usuario según la id proporcionada
    */
   @Get('/:id')
-  async getUserById(@Param('id') id: string) {
-    const user = await this.usersService.getUserById(parseInt(id));
+  async getUserById(@Param('id') id: string): Promise<User> {
+    const user = await this.service.getUserById(parseInt(id));
     if (!user) {
       throw new NotFoundException(`Usuario con id ${id} no encontrado`);
     }
@@ -37,9 +39,12 @@ export class UsersController {
   }
 
   /**
+   * registra un nuevo usuario
+   *
    * @param id
    * @param createUserDto
-   * @returns registra un nuevo usuario
+   *
+   * @returns {Promise<User>} el usuario creado
    */
   @Post('/register')
   @UsePipes(
@@ -49,7 +54,7 @@ export class UsersController {
       transform: true,
     }),
   )
-  async createUser(@Body() createUserDto: CreateUserDto) {
-    return this.usersService.createUser(createUserDto);
+  async createUser(@Body() createUserDto: CreateUserDto): Promise<User> {
+    return this.service.createUser(createUserDto);
   }
 }
