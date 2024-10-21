@@ -11,7 +11,7 @@ import {
 import { CreateUserDto } from './dto/create-user.dto';
 import { UsersService } from './users.service';
 
-@Controller('users')
+@Controller('/users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
@@ -27,7 +27,7 @@ export class UsersController {
    * @param id
    * @returns un usuario según la id proporcionada
    */
-  @Get(':id')
+  @Get('/:id')
   async getUserById(@Param('id') id: string) {
     const user = await this.usersService.getUserById(parseInt(id));
     if (!user) {
@@ -41,7 +41,7 @@ export class UsersController {
    * @param createUserDto
    * @returns registra un nuevo usuario
    */
-  @Post('register')
+  @Post('/register')
   @UsePipes(
     new ValidationPipe({
       whitelist: true,
