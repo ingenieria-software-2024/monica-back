@@ -1,12 +1,12 @@
-import { Body, Controller, Get, Param, Post, Put } from '@nestjs/common';
+import { Body, Controller, Get, Param, Put } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { Product } from '@prisma/client';
 
 @Controller('product')
 export class ProductController {
-    constructor(private readonly productService: ProductService) {}
+  constructor(private readonly productService: ProductService) {}
 
-/*     @Post('create')
+  /*     @Post('create')
     async createProduct(@Body() data: Product) {
         return this.productService.createProduct(
         data.name, 
@@ -18,22 +18,18 @@ export class ProductController {
         );
     }
  */
-    @Get()
-    async getProducts() {
-        return this.productService.getProducts();
-    }
+  @Get()
+  async getProducts() {
+    return this.productService.getProducts();
+  }
 
-    @Get(':id')
-    async getProductById(@Param('id') id: string) {
-        return this.productService.getProductById(parseInt(id));
-    }
-    
-    @Put(':id')
-    async updateProduct(
-        @Param('id') id: string, 
-        @Body() data: Product
-    ) {
-        return this.productService.updateProductById(parseInt(id), data);
-    }
+  @Get(':id')
+  async getProductById(@Param('id') id: string) {
+    return this.productService.getProductById(parseInt(id));
+  }
+
+  @Put(':id')
+  async updateProduct(@Param('id') id: string, @Body() data: Product) {
+    return this.productService.updateProductById(parseInt(id), data);
+  }
 }
-

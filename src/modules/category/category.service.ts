@@ -28,10 +28,10 @@ export class CategoryService implements ICategoryService {
   }
 
   async getCategoryById(id: number): Promise<Category> {
-    try{
-      return await this.#categories.findUnique({ where: { id } })
-    } catch(error){
-      throw new BadRequestException("No existe esa categoria")
+    try {
+      return await this.#categories.findUnique({ where: { id } });
+    } catch (error) {
+      throw new BadRequestException('No existe esa categoria');
     }
   }
   async updateCategoryByid(id: number, data: Category) {
@@ -43,5 +43,4 @@ export class CategoryService implements ICategoryService {
       },
     });
   }
-
 }

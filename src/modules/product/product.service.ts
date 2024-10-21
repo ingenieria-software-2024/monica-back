@@ -68,7 +68,6 @@ export class ProductService implements IProductService {
         price: data.price,
         imageUrl: data.imageUrl,
         description: data.description,
-        
       },
     });
   }

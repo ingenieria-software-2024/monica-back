@@ -46,5 +46,4 @@ export interface IProductService {
    * @returns {Promise<Product>}
    */
   updateProductById(id: number, data: Product): Promise<Product>;
-
 }
