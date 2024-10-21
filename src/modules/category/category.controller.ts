@@ -11,7 +11,7 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { CategoryService } from './category.service';
-import { Category } from '@prisma/client';
+import { Category, SubCategory } from '@prisma/client';
 import { CreateCategoryDto } from './dto/create.category.dto';
 import { ISubCategoryService } from './subcategory.interface';
 import { ICategoryService } from './category.interface';
@@ -31,15 +31,15 @@ export class CategoryController {
     return this.category.getCategories();
   }
 
+  @Get('/:id')
+  async getCategoryById(@Param('id', ParseIntPipe) id: number) {
+    return this.category.getCategoryById(id);
+  }
+
   @Post()
   @UsePipes(ValidationPipe)
   async createCategory(@Body() data: CreateCategoryDto) {
     return this.category.createCategory(data.name, data.description);
-  }
-
-  @Get('/:id')
-  async getCategoryById(@Param('id', ParseIntPipe) id: number) {
-    return this.category.getCategoryById(id);
   }
 
   @Put('/:id')
@@ -48,5 +48,33 @@ export class CategoryController {
     @Body() data: Category,
   ) {
     return this.category.updateCategoryByid(id, data);
+  }
+
+  @Get('/:id/subcategories')
+  async getSubCategoriesByCategoryId(
+    @Param('id', ParseIntPipe) categoryId: number,
+  ): Promise<Array<SubCategory>> {
+    return this.subCategory.getSubCategoriesByParent(categoryId);
+  }
+
+  @Get('/:id/subcategories/:subId')
+  async getSubCategoryById(
+    @Param('id', ParseIntPipe) categoryId: number,
+    @Param('subId', ParseIntPipe) subCategoryId: number,
+  ): Promise<SubCategory> {
+    return this.subCategory.getSubCategoryById(categoryId, subCategoryId);
+  }
+
+  @Post('/:id/subcategories')
+  @UsePipes(ValidationPipe)
+  async createSubCategory(
+    @Param('id', ParseIntPipe) categoryId: number,
+    @Body() data: CreateCategoryDto,
+  ): Promise<SubCategory> {
+    return this.subCategory.createSubCategory(
+      data.name,
+      categoryId,
+      data.description,
+    );
   }
 }

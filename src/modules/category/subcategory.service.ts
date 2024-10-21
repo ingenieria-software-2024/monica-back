@@ -48,7 +48,17 @@ export class SubCategoryService implements ISubCategoryService {
     return await this.#subCategories.findMany();
   }
 
-  async getSubCategoryById(id: number): Promise<SubCategory> {
-    return await this.#subCategories.findUnique({ where: { id } });
+  async getSubCategoryById(parent: number, id: number): Promise<SubCategory> {
+    return await this.#subCategories.findUnique({
+      where: { id, category: { id: parent } },
+    });
+  }
+
+  async getSubCategoriesByParent(
+    categoryId: number,
+  ): Promise<Array<SubCategory>> {
+    return await this.#subCategories.findMany({
+      where: { category: { id: categoryId } },
+    });
   }
 }
