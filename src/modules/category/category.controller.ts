@@ -12,21 +12,21 @@ import { Category } from '@prisma/client';
 
 @Controller('/categories')
 export class CategoryController {
-  constructor(private readonly categoryService: CategoryService) {}
+  constructor(private readonly service: CategoryService) {}
 
   @Get()
   async getCategories() {
-    return this.categoryService.getCategories();
+    return this.service.getCategories();
   }
 
   @Get('/:id')
   async getCategoryById(@Param('id', ParseIntPipe) id: number) {
-    return this.categoryService.getCategoryById(id);
+    return this.service.getCategoryById(id);
   }
 
   @Post('/create')
   async createCategory(@Body() data: Category) {
-    return this.categoryService.createCategory(data.name, data.description);
+    return this.service.createCategory(data.name, data.description);
   }
 
   @Put('/:id')
@@ -34,6 +34,6 @@ export class CategoryController {
     @Param('id', ParseIntPipe) id: number,
     @Body() data: Category,
   ) {
-    return this.categoryService.updateCategoryByid(id, data);
+    return this.service.updateCategoryByid(id, data);
   }
 }

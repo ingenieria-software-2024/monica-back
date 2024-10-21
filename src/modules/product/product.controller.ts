@@ -11,7 +11,7 @@ import { Product } from '@prisma/client';
 
 @Controller('/products')
 export class ProductController {
-  constructor(private readonly productService: ProductService) {}
+  constructor(private readonly service: ProductService) {}
 
   /*     @Post('create')
     async createProduct(@Body() data: Product) {
@@ -27,12 +27,12 @@ export class ProductController {
  */
   @Get()
   async getProducts() {
-    return this.productService.getProducts();
+    return this.service.getProducts();
   }
 
   @Get('/:id')
   async getProductById(@Param('id', ParseIntPipe) id: number) {
-    return this.productService.getProductById(id);
+    return this.service.getProductById(id);
   }
 
   @Put('/:id')
@@ -40,6 +40,6 @@ export class ProductController {
     @Param('id', ParseIntPipe) id: number,
     @Body() data: Product,
   ) {
-    return this.productService.updateProductById(id, data);
+    return this.service.updateProductById(id, data);
   }
 }
