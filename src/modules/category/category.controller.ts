@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  Inject,
   Param,
   ParseIntPipe,
   Post,
@@ -12,25 +13,33 @@ import {
 import { CategoryService } from './category.service';
 import { Category } from '@prisma/client';
 import { CreateCategoryDto } from './dto/create.category.dto';
+import { ISubCategoryService } from './subcategory.interface';
+import { ICategoryService } from './category.interface';
+import { SubCategoryService } from './subcategory.service';
 
 @Controller('/categories')
 export class CategoryController {
-  constructor(private readonly service: CategoryService) {}
+  constructor(
+    @Inject(CategoryService)
+    private readonly category: ICategoryService,
+    @Inject(SubCategoryService)
+    private readonly subCategory: ISubCategoryService,
+  ) {}
 
   @Get()
   async getCategories() {
-    return this.service.getCategories();
+    return this.category.getCategories();
   }
 
   @Post()
   @UsePipes(ValidationPipe)
   async createCategory(@Body() data: CreateCategoryDto) {
-    return this.service.createCategory(data.name, data.description);
+    return this.category.createCategory(data.name, data.description);
   }
 
   @Get('/:id')
   async getCategoryById(@Param('id', ParseIntPipe) id: number) {
-    return this.service.getCategoryById(id);
+    return this.category.getCategoryById(id);
   }
 
   @Put('/:id')
@@ -38,6 +47,6 @@ export class CategoryController {
     @Param('id', ParseIntPipe) id: number,
     @Body() data: Category,
   ) {
-    return this.service.updateCategoryByid(id, data);
+    return this.category.updateCategoryByid(id, data);
   }
 }

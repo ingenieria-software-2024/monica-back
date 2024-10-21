@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  Inject,
   Param,
   ParseIntPipe,
   Post,
@@ -12,14 +13,18 @@ import {
 import { ProductService } from './product.service';
 import { Product } from '@prisma/client';
 import { CreateProductDto } from './dto/create.product.dto';
+import { IProductService } from './product.interface';
 
 @Controller('/products')
 export class ProductController {
-  constructor(private readonly service: ProductService) {}
+  constructor(
+    @Inject(ProductService)
+    private readonly product: IProductService,
+  ) {}
 
   @Get()
   async getProducts() {
-    return this.service.getProducts();
+    return this.product.getProducts();
   }
 
   @Post()
@@ -29,7 +34,7 @@ export class ProductController {
     const { name, price, imageUrl, categoryId, isSubCategory, description } =
       data;
 
-    return this.service.createProduct(
+    return this.product.createProduct(
       name,
       price,
       imageUrl,
@@ -41,7 +46,7 @@ export class ProductController {
 
   @Get('/:id')
   async getProductById(@Param('id', ParseIntPipe) id: number) {
-    return this.service.getProductById(id);
+    return this.product.getProductById(id);
   }
 
   @Put('/:id')
@@ -49,6 +54,6 @@ export class ProductController {
     @Param('id', ParseIntPipe) id: number,
     @Body() data: Product,
   ) {
-    return this.service.updateProductById(id, data);
+    return this.product.updateProductById(id, data);
   }
 }
