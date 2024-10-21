@@ -1,4 +1,11 @@
-import { Body, Controller, Get, Param, Put } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  ParseIntPipe,
+  Put,
+} from '@nestjs/common';
 import { ProductService } from './product.service';
 import { Product } from '@prisma/client';
 
@@ -24,12 +31,15 @@ export class ProductController {
   }
 
   @Get('/:id')
-  async getProductById(@Param('id') id: string) {
-    return this.productService.getProductById(parseInt(id));
+  async getProductById(@Param('id', ParseIntPipe) id: number) {
+    return this.productService.getProductById(id);
   }
 
   @Put('/:id')
-  async updateProduct(@Param('id') id: string, @Body() data: Product) {
-    return this.productService.updateProductById(parseInt(id), data);
+  async updateProduct(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() data: Product,
+  ) {
+    return this.productService.updateProductById(id, data);
   }
 }

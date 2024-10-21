@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Param, Post, Put } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  ParseIntPipe,
+  Post,
+  Put,
+} from '@nestjs/common';
 import { CategoryService } from './category.service';
 import { Category } from '@prisma/client';
 
@@ -12,8 +20,8 @@ export class CategoryController {
   }
 
   @Get('/:id')
-  async getCategoryById(@Param('id') id: string) {
-    return this.categoryService.getCategoryById(Number(id));
+  async getCategoryById(@Param('id', ParseIntPipe) id: number) {
+    return this.categoryService.getCategoryById(id);
   }
 
   @Post('/create')
@@ -21,7 +29,10 @@ export class CategoryController {
     return this.categoryService.createCategory(data.name, data.description);
   }
   @Put('/:id')
-  async updateCategoryByid(@Param('id') id: string, @Body() data: Category) {
-    return this.categoryService.updateCategoryByid(parseInt(id), data);
+  async updateCategoryByid(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() data: Category,
+  ) {
+    return this.categoryService.updateCategoryByid(id, data);
   }
 }
