@@ -59,10 +59,9 @@ export class CategoryController {
 
   @Get('/:id/subcategories/:subId')
   async getSubCategoryById(
-    @Param('id', ParseIntPipe) categoryId: number,
     @Param('subId', ParseIntPipe) subCategoryId: number,
   ): Promise<SubCategory> {
-    return this.subCategory.getSubCategoryById(categoryId, subCategoryId);
+    return this.subCategory.getSubCategoryById(subCategoryId);
   }
 
   @Post('/:id/subcategories')
