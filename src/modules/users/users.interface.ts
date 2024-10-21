@@ -4,26 +4,25 @@ export interface IUsersService {
   /**
    * Devuelve un listado con todos los usuarios
    *
-   * @returns {Promise<Array<User>>}
+   * @returns {Promise<Array<User>>} Un listado con todos los usuarios registrados.
    */
   getAllUsers(): Promise<Array<User>>;
 
   /**
    * Devuelve un usuario por su id
    *
-   * @param {number} id
+   * @param {number} id ID del usuario a buscar.
    *
-   * @returns {Promise<Users>}
+   * @returns {Promise<User>} El usuario encontrado.
    */
   getUserById(id: number): Promise<User>;
 
   /**
    * Crea un nuevo usuario
-   * @param {string} username Nombre de usuario
-   * @param {string} email Correo electrónico
-   * @param {string} password Contraseña
    *
-   * @returns {Promise<User>}
+   * @param {Prisma.UserCreateInput} data Datos del usuario a crear.
+   *
+   * @returns {Promise<User>} El nuevo usuario creado.
    */
   createUser(data: Prisma.UserCreateInput): Promise<User>;
 }
