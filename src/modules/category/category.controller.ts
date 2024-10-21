@@ -28,6 +28,7 @@ export class CategoryController {
   async createCategory(@Body() data: Category) {
     return this.categoryService.createCategory(data.name, data.description);
   }
+
   @Put('/:id')
   async updateCategoryByid(
     @Param('id', ParseIntPipe) id: number,
