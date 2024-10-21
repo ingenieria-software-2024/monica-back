@@ -4,30 +4,39 @@ import {
   Get,
   Param,
   ParseIntPipe,
+  Post,
   Put,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { Product } from '@prisma/client';
+import { CreateProductDto } from './dto/create.product.dto';
 
 @Controller('/products')
 export class ProductController {
   constructor(private readonly service: ProductService) {}
 
-  /*     @Post('create')
-    async createProduct(@Body() data: Product) {
-        return this.productService.createProduct(
-        data.name, 
-        data.price, 
-        data.imageUrl, 
-        data.categoryId, 
-        true,//data.subCategoryId No se como pasar de un Number a un Boolean
-        data.description 
-        );
-    }
- */
   @Get()
   async getProducts() {
     return this.service.getProducts();
+  }
+
+  @Post()
+  @UsePipes(ValidationPipe)
+  async createProduct(@Body() data: CreateProductDto) {
+    // Destructurar información del DTO.
+    const { name, price, imageUrl, categoryId, isSubCategory, description } =
+      data;
+
+    return this.service.createProduct(
+      name,
+      price,
+      imageUrl,
+      categoryId,
+      isSubCategory,
+      description,
+    );
   }
 
   @Get('/:id')

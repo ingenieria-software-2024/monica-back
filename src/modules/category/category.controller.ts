@@ -6,9 +6,12 @@ import {
   ParseIntPipe,
   Post,
   Put,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
 import { CategoryService } from './category.service';
 import { Category } from '@prisma/client';
+import { CreateCategoryDto } from './dto/create.category.dto';
 
 @Controller('/categories')
 export class CategoryController {
@@ -19,14 +22,15 @@ export class CategoryController {
     return this.service.getCategories();
   }
 
+  @Post()
+  @UsePipes(ValidationPipe)
+  async createCategory(@Body() data: CreateCategoryDto) {
+    return this.service.createCategory(data.name, data.description);
+  }
+
   @Get('/:id')
   async getCategoryById(@Param('id', ParseIntPipe) id: number) {
     return this.service.getCategoryById(id);
-  }
-
-  @Post('/create')
-  async createCategory(@Body() data: Category) {
-    return this.service.createCategory(data.name, data.description);
   }
 
   @Put('/:id')
