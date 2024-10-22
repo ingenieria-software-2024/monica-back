@@ -1,4 +1,5 @@
 import { Product } from '@prisma/client';
+import { UpdateProductDto } from './dto/update.producto.dto';
 
 export interface IProductService {
   /**
@@ -40,10 +41,10 @@ export interface IProductService {
   /**
    * Actualiza una Product por su identificador.
    *
-   * @param {number} id El identificador deL Product.
-   * @param {Product} data Los datos para actualizar el Product
+   * @param {number} id 
+   * @param {UpdateProductDto} updateProductDto 
    *
    * @returns {Promise<Product>}
    */
-  updateProductById(id: number, data: Product): Promise<Product>;
+    updateProductById(id: number, updateProductDto: UpdateProductDto): Promise<Product>;
 }

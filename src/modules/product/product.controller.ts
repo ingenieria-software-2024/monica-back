@@ -14,6 +14,7 @@ import { ProductService } from './product.service';
 import { Product } from '@prisma/client';
 import { CreateProductDto } from './dto/create.product.dto';
 import { IProductService } from './product.interface';
+import { UpdateProductDto } from './dto/update.producto.dto';
 
 @Controller('/products')
 export class ProductController {
@@ -50,10 +51,11 @@ export class ProductController {
   }
 
   @Put('/:id')
+  @UsePipes(ValidationPipe)
   async updateProduct(
     @Param('id', ParseIntPipe) id: number,
-    @Body() data: Product,
+    @Body() updateProductDto: UpdateProductDto,
   ) {
-    return this.product.updateProductById(id, data);
+    return this.product.updateProductById(id, updateProductDto);
   }
 }

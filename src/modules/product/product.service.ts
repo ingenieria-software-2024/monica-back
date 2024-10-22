@@ -6,6 +6,7 @@ import { CategoryService } from '../category/category.service';
 import { ICategoryService } from '../category/category.interface';
 import { SubCategoryService } from '../category/subcategory.service';
 import { ISubCategoryService } from '../category/subcategory.interface';
+import { UpdateProductDto } from './dto/update.producto.dto';
 
 @Injectable()
 export class ProductService implements IProductService {
@@ -60,14 +61,47 @@ export class ProductService implements IProductService {
   async getProductById(id: number): Promise<Product> {
     return await this.#products.findUnique({ where: { id } });
   }
-  async updateProductById(id: number, data: Product) {
+  async updateProductById(id: number, updateProductDto: UpdateProductDto): Promise<Product> {
+    const { name, price, imageUrl, description, categoryId, subCategoryId } = updateProductDto;
+  
+    // Verificar si el producto existe.
+    const existingProduct = await this.#products.findUnique({ where: { id } });
+  
+    if (!existingProduct) {
+      throw new NotFoundException(`No se encontró el producto con ID: ${id}`);
+    }
+  
+    // Si se proporciona `categoryId` o `subCategoryId`, validar la relación.
+    if (categoryId) {
+      const category = await this.categories.getCategoryById(categoryId);
+      if (!category) {
+        throw new NotFoundException(`No se encontró la categoría con ID: ${categoryId}`);
+      }
+    } else if (subCategoryId) {
+      const subCategory = await this.subCategories.getSubCategoryById(subCategoryId);
+      if (!subCategory) {
+        throw new NotFoundException(`No se encontró la subcategoría con ID: ${subCategoryId}`);
+      }
+    }
+  
+    // Actualizar el producto.
     return await this.#products.update({
       where: { id },
       data: {
-        name: data.name,
-        price: data.price,
-        imageUrl: data.imageUrl,
-        description: data.description,
+        name,
+        price,
+        imageUrl,
+        description,
+        ...(categoryId && {
+          category: {
+            connect: { id: categoryId },
+          },
+        }),
+        ...(subCategoryId && {
+          subCategory: {
+            connect: { id: subCategoryId },
+          },
+        }),
       },
     });
   }
