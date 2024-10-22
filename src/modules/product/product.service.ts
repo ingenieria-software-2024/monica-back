@@ -25,6 +25,7 @@ export class ProductService implements IProductService {
     this.#products = prisma.product;
   }
 
+  /** Metodo para crear un producto */
   async createProduct(createProductDto: CreateProductDto): Promise<Product> {
     const { name, price, imageUrl, categoryId, isSubCategory, description } =
       createProductDto;
@@ -53,12 +54,18 @@ export class ProductService implements IProductService {
 
     return await this.#products.create({ data: product });
   }
+
+  /**Metodo para obtener todos los productos registrados */
   async getProducts(): Promise<Array<Product>> {
     return await this.#products.findMany();
   }
+
+  /**Metodo para obtener un producto por su ID */
   async getProductById(id: number): Promise<Product> {
     return await this.#products.findUnique({ where: { id } });
   }
+
+  /** Metodo para actualizar un producto */
   async updateProductById(id: number, updateProductDto: UpdateProductDto): Promise<Product> {
     const { name, price, imageUrl, description, categoryId, subCategoryId } = updateProductDto;
   
