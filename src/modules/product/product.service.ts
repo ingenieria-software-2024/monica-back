@@ -6,6 +6,7 @@ import { CategoryService } from '../category/category.service';
 import { ICategoryService } from '../category/category.interface';
 import { SubCategoryService } from '../category/subcategory.service';
 import { ISubCategoryService } from '../category/subcategory.interface';
+import { CreateProductDto } from './dto/create.product.dto';
 import { UpdateProductDto } from './dto/update.producto.dto';
 
 @Injectable()
@@ -24,32 +25,29 @@ export class ProductService implements IProductService {
     this.#products = prisma.product;
   }
 
-  async createProduct(
-    name: string,
-    price: number,
-    image: string,
-    category: number,
-    isSubCategory: boolean,
-    description?: string,
-  ): Promise<Product> {
-    // Buscar la categoria primero.
-    const cat = isSubCategory
-      ? await this.subCategories.getSubCategoryById(category)
-      : await this.categories.getCategoryById(category);
+  async createProduct(createProductDto: CreateProductDto): Promise<Product> {
+    const { name, price, imageUrl, categoryId, isSubCategory, description } =
+      createProductDto;
 
-    if (!cat)
+    // Buscar la categoría o subcategoría primero.
+    const cat = isSubCategory
+      ? await this.subCategories.getSubCategoryById(categoryId)
+      : await this.categories.getCategoryById(categoryId);
+
+    if (!cat) {
       throw new NotFoundException(
-        `No se encontro la categoria con ID: ${category}`,
+        `No se encontró la ${isSubCategory ? 'subcategoría' : 'categoría'} con ID: ${categoryId}`,
       );
+    }
 
     // Crear el producto.
     const product: Prisma.ProductCreateInput = {
       name,
       price,
-      imageUrl: image,
+      imageUrl,
       description,
       [isSubCategory ? 'subCategory' : 'category']: {
-        connect: { id: category },
+        connect: { id: categoryId },
       },
     };
 

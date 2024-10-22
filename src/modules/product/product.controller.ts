@@ -30,19 +30,9 @@ export class ProductController {
 
   @Post()
   @UsePipes(ValidationPipe)
-  async createProduct(@Body() data: CreateProductDto) {
-    // Destructurar información del DTO.
-    const { name, price, imageUrl, categoryId, isSubCategory, description } =
-      data;
-
-    return this.product.createProduct(
-      name,
-      price,
-      imageUrl,
-      categoryId,
-      isSubCategory,
-      description,
-    );
+  async createProduct(@Body() createProductDto: CreateProductDto) {
+    // Usar el DTO directamente
+    return this.product.createProduct(createProductDto);
   }
 
   @Get('/:id')

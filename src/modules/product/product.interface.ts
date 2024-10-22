@@ -1,27 +1,15 @@
 import { Product } from '@prisma/client';
+import { CreateProductDto } from './dto/create.product.dto';
 import { UpdateProductDto } from './dto/update.producto.dto';
 
 export interface IProductService {
   /**
    * Crea un nuevo producto del dominio.
    *
-   * @param {string} name Nombre del producto.
-   * @param {number} price El precio a asignar al producto.
-   * @param {string} image Una direccion URI en donde se aloja la imagen principal de un producto.
-   * @param {number} category El ID de categoria o subcategoria a la cual pertenecera el producto.
-   * @param {boolean} isSubCategory Especifica si el ID propuesto pertenece a una sub-categoria y no a una categoria comun.
-   * @param {string} [description] Opcional. Una descripcion asociada a este producto.
-   *
+   * @param {CreateProductDto} createProductDto
    * @returns {Promise<Product>}
    */
-  createProduct(
-    name: string,
-    price: number,
-    image: string,
-    category: number,
-    isSubCategory: boolean,
-    description?: string,
-  ): Promise<Product>;
+  createProduct(createProductDto: CreateProductDto): Promise<Product>;
 
   /**
    * Obtiene un producto del dominio.
