@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/providers/prisma.service';
 import { Prisma, User } from '@prisma/client';
 import { IUsersService } from './users.interface';
@@ -23,7 +23,16 @@ export class UsersService implements IUsersService {
     // Hashear contraseña del usuario.
     const password = await hash(data.password, salt);
 
-    // Crear el nuevo usuario con la constraseña hasheada.
+    //Verificar que el email sea único
+    const existingUser = await this.prisma.user.findUnique({
+      where: { email: data.email },
+    });
+
+    if (existingUser) {
+      // Si el email ya existe, lanzar una excepción ConflictException.
+      throw new ConflictException('El email ya está registrado.');
+    }
+
     return this.prisma.user.create({ data: { ...data, password } });
   }
 }
