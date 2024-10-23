@@ -46,10 +46,7 @@ export class SizeController {
     @Param('productId') productId: number,
     @Body() assignSizeDto: AssignSizeDto,
   ): Promise<Product> {
-    return this.size.assignSizeToProduct(
-      assignSizeDto,
-      Number(productId),
-    );
+    return this.size.assignSizeToProduct(assignSizeDto, Number(productId));
   }
 
   // Metodo para obtener el stock por tamaño

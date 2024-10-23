@@ -53,10 +53,10 @@ export class ProductService implements IProductService {
         connect: { id: category },
       },
       size: {
-        connect: { id: size },  // Conectar con el tamaño
+        connect: { id: size }, // Conectar con el tamaño
       },
       color: {
-        connect: { id: color },  // Conectar con el color
+        connect: { id: color }, // Conectar con el color
       },
     };
 

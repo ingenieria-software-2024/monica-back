@@ -12,7 +12,7 @@ export interface IProductService {
    * @param {number} color El ID de color al cual pertenecera a este producto
    * @param {boolean} isSubCategory Especifica si el ID propuesto pertenece a una sub-categoria y no a una categoria comun.
    * @param {string} [description] Opcional. Una descripcion asociada a este producto.
-   * 
+   *
    * @returns {Promise<Product>}
    */
   createProduct(

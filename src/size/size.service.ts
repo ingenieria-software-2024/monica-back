@@ -42,7 +42,7 @@ export class SizeService implements ISizeService {
         name: createSizeDto.name,
         stock: createSizeDto.stock,
         stockMin: createSizeDto.stockMin,
-        description: createSizeDto.description
+        description: createSizeDto.description,
       },
     });
   }
@@ -50,10 +50,10 @@ export class SizeService implements ISizeService {
   // Método para asignar un tamaño existente a un producto
   async assignSizeToProduct(
     assignSizeDto: AssignSizeDto,
-    productId: number
+    productId: number,
   ): Promise<Product> {
     // Extraer el sizeId del DTO
-    const {sizeId} = assignSizeDto;
+    const { sizeId } = assignSizeDto;
 
     // Convertir productId a número
     const numericProductId = Number(productId);
@@ -116,7 +116,7 @@ export class SizeService implements ISizeService {
     // Retornar los productos junto con su stock asociado al tamaño
     return products.map((product) => ({
       product,
-      stock: product.size ? product.size.stock : 0, 
+      stock: product.size ? product.size.stock : 0,
     }));
   }
 
@@ -126,13 +126,18 @@ export class SizeService implements ISizeService {
       where: {
         id,
       },
-      data:{
+      data: {
         ...(updateSizeDto.name && { name: updateSizeDto.name }),
-        ...(updateSizeDto.description && { description: updateSizeDto.description }),
-        ...(updateSizeDto.stock !== undefined && { stock: updateSizeDto.stock }),
-        ...(updateSizeDto.stockMin !== undefined && { stockMin: updateSizeDto.stockMin }),
- 
-      }
+        ...(updateSizeDto.description && {
+          description: updateSizeDto.description,
+        }),
+        ...(updateSizeDto.stock !== undefined && {
+          stock: updateSizeDto.stock,
+        }),
+        ...(updateSizeDto.stockMin !== undefined && {
+          stockMin: updateSizeDto.stockMin,
+        }),
+      },
     });
   }
 

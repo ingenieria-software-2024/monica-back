@@ -46,10 +46,7 @@ export class ColorController {
     @Param('productId') productId: string,
     @Body() assignColorDto: AssignColorDto,
   ): Promise<Product> {
-    return this.color.assignColorToProduct(
-      assignColorDto,
-      Number(productId),
-    );
+    return this.color.assignColorToProduct(assignColorDto, Number(productId));
   }
 
   // Método para obtener el stock por color

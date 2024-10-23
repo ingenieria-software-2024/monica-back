@@ -4,7 +4,7 @@ import { Color, Prisma, Product } from '@prisma/client';
 import { PrismaService } from 'src/providers/prisma.service';
 import { CreateColorDto } from './dto/create-color.dto';
 import { UpdateColorDto } from './dto/update-color.dto';
-import { AssignColorDto } from "./dto/assign-color.dto";
+import { AssignColorDto } from './dto/assign-color.dto';
 
 @Injectable()
 export class ColorService implements IColorService {
@@ -49,11 +49,11 @@ export class ColorService implements IColorService {
 
   // Método para asignar un color existente a un producto
   async assignColorToProduct(
-    assignColorDto: AssignColorDto, 
+    assignColorDto: AssignColorDto,
     productId: number,
   ): Promise<Product> {
     // Extraemos el colorId del DTO
-    const { colorId } = assignColorDto; 
+    const { colorId } = assignColorDto;
 
     // Convertir productId a número
     const numericProductId = Number(productId);
@@ -80,7 +80,7 @@ export class ColorService implements IColorService {
     const updatedProduct = await this.prisma.product.update({
       where: { id: numericProductId },
       data: { colorId: colorId },
-      include: { color: true }, 
+      include: { color: true },
     });
 
     // Retornar el producto actualizado
@@ -117,21 +117,30 @@ export class ColorService implements IColorService {
     // Retornar los productos junto con su stock asociado al color
     return products.map((product) => ({
       product,
-      stock: product.color ? product.color.stock : 0, 
+      stock: product.color ? product.color.stock : 0,
     }));
   }
 
   // Método para actualizar un color
-  async updateColor(id: number, updateColorDto: UpdateColorDto): Promise<Color> {
+  async updateColor(
+    id: number,
+    updateColorDto: UpdateColorDto,
+  ): Promise<Color> {
     return this.prisma.color.update({
       where: {
         id,
       },
       data: {
         ...(updateColorDto.name && { name: updateColorDto.name }),
-        ...(updateColorDto.description && { description: updateColorDto.description }),
-        ...(updateColorDto.stock !== undefined && { stock: updateColorDto.stock }),
-        ...(updateColorDto.stockMin !== undefined && { stockMin: updateColorDto.stockMin }),
+        ...(updateColorDto.description && {
+          description: updateColorDto.description,
+        }),
+        ...(updateColorDto.stock !== undefined && {
+          stock: updateColorDto.stock,
+        }),
+        ...(updateColorDto.stockMin !== undefined && {
+          stockMin: updateColorDto.stockMin,
+        }),
       },
     });
   }
