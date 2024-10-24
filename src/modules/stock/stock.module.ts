@@ -1,8 +1,11 @@
 import { Module } from '@nestjs/common';
-import { SizeModule } from './size/size.module';
-import { ColorModule } from './color/color.module';
+import { StockService } from './stock.service';
+import { StockController } from './stock.controller';
+import { PrismaModule } from 'src/providers/prisma.module';
 
 @Module({
-  imports: [SizeModule, ColorModule],
+  imports: [PrismaModule],
+  controllers: [StockController],
+  providers: [StockService],
 })
 export class StockModule {}
