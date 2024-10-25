@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { PrismaService } from 'src/providers/prisma.service';
 import { CategoryModule } from '../category/category.module';
-import { VariantCategoryModule } from '../category/variant/variantCategory.module';
+import { VariantCategoryModule } from '../category/variant/variant.category.module';
 
 @Module({
   imports: [CategoryModule, VariantCategoryModule],

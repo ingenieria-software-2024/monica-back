@@ -4,9 +4,9 @@ import {
   ProductVariant,
   VariantCategory,
 } from '@prisma/client';
-import { CreateVariantCategoryDto } from './dto/create-variantCategory.dto';
-import { UpdateVariantCategoryDto } from './dto/update-variantCategory.dto';
-import { IVariantCategoryService } from './variantCategory.interface';
+import { CreateVariantCategoryDto } from './dto/create.variant.category.dto';
+import { UpdateVariantCategoryDto } from './dto/update.variant.category.dto';
+import { IVariantCategoryService } from './variant.category.interface';
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/providers/prisma.service';
 

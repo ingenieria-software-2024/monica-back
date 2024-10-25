@@ -15,7 +15,7 @@ import { SubCategoryService } from '../category/subcategory.service';
 import { ISubCategoryService } from '../category/subcategory.interface';
 import { CreateProductDto } from './dto/create.producto.dto';
 import { UpdateProductDto } from './dto/update.producto.dto';
-import { VariantCategoryService } from '../category/variant/variantCategory.service';
+import { VariantCategoryService } from '../category/variant/variant.category.service';
 
 @Injectable()
 export class ProductService implements IProductService {
@@ -62,7 +62,7 @@ export class ProductService implements IProductService {
     let createdVariantCategoryId: number | undefined;
 
     if (variantCategory) {
-      const { id, name, description } = variantCategory;
+      const { id } = variantCategory;
       const existingVariantCategory = id
         ? await this.variantCategoryService.getVariantCategoryById(id)
         : null;

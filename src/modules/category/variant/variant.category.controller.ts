@@ -10,10 +10,10 @@ import {
   Inject,
   NotFoundException,
 } from '@nestjs/common';
-import { VariantCategoryService } from '../../variantCategory/variantCategory.service';
-import { CreateVariantCategoryDto } from './dto/create-variantCategory.dto';
-import { UpdateVariantCategoryDto } from './dto/update-variantCategory.dto';
-import { IVariantCategoryService } from '../../variantCategory/variantCategory.interface';
+import { VariantCategoryService } from './variant.category.service';
+import { CreateVariantCategoryDto } from './dto/create.variant.category.dto';
+import { UpdateVariantCategoryDto } from './dto/update.variant.category.dto';
+import { IVariantCategoryService } from './variant.category.interface';
 import { VariantCategory } from '@prisma/client';
 
 @Controller('/variant-categories')

@@ -1,4 +1,4 @@
-import { ProductVariant, Product } from '@prisma/client';
+import { ProductVariant } from '@prisma/client';
 import { CreateVariantDto } from './dto/create-variant.dto';
 import { UpdateVariantDto } from './dto/update-variant.dto';
 

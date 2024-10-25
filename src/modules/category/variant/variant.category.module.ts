@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
-import { VariantCategoryService } from '../../variantCategory/variantCategory.service';
-import { VariantCategoryController } from './variantCategory.controller';
+import { VariantCategoryService } from './variant.category.service';
+import { VariantCategoryController } from './variant.category.controller';
 import { PrismaModule } from 'src/providers/prisma.module';
 
 @Module({

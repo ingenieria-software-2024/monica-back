@@ -1,4 +1,4 @@
-import { Prisma, ProductVariant, Product } from '@prisma/client';
+import { Prisma, ProductVariant } from '@prisma/client';
 import { CreateVariantDto } from './dto/create-variant.dto';
 import { UpdateVariantDto } from './dto/update-variant.dto';
 import { IStockService } from './stock.interface';

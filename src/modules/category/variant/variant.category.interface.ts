@@ -1,6 +1,6 @@
 import { VariantCategory, ProductVariant, Product } from '@prisma/client';
-import { CreateVariantCategoryDto } from './dto/create-variantCategory.dto';
-import { UpdateVariantCategoryDto } from './dto/update-variantCategory.dto';
+import { CreateVariantCategoryDto } from './dto/create.variant.category.dto';
+import { UpdateVariantCategoryDto } from './dto/update.variant.category.dto';
 
 export interface IVariantCategoryService {
   /**
