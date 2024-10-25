@@ -1,24 +1,24 @@
 import { Type } from 'class-transformer';
 import {
-  IsString,
-  IsNumber,
-  IsInt,
-  Length,
-  IsOptional,
-  IsNotEmpty,
-  IsDefined,
-  Min,
   IsBoolean,
+  IsDefined,
+  IsNotEmpty,
+  IsInt,
+  IsNumber,
+  IsOptional,
+  IsString,
+  Min,
+  Length,
   ValidateNested,
 } from 'class-validator';
 import { UpdateVariantDto } from 'src/modules/stock/dto/update-variant.dto';
+import { CreateVariantCategoryDto } from 'src/modules/category/variant/dto/create.variant.category.dto';
 
-export class UpdateProductDto {
+export class CreateProductDto {
   @IsString()
   @IsDefined()
   @IsNotEmpty()
   @Length(3, 100, { message: 'El nombre debe tener entre 3 y 100 caracteres.' })
-  /** El nombre representativo del producto a crear. */
   name: string;
 
   @IsString()
@@ -28,37 +28,36 @@ export class UpdateProductDto {
   @Length(0, 500, {
     message: 'La descripción no puede superar los 500 caracteres.',
   })
-  /** Una descripción asociada a este producto. */
   description?: string;
 
   @IsNumber()
   @IsDefined()
   @Min(0)
-  /** El precio del producto a crear. */
   price: number;
 
   @IsString()
   @IsDefined()
   @IsNotEmpty()
-  /** La URL a una imágen representativa del producto. */
   imageUrl: string;
 
   @IsInt()
   @IsDefined()
   @IsNotEmpty()
-  /** El ID de categoría o sub-categoría a la que pertenece este producto. */
-  categoryId?: number;
+  categoryId: number;
 
   @IsBoolean()
   @IsOptional()
   @IsNotEmpty()
   @IsDefined()
-  /** Indicador de si el ID provisto pertenece a una sub-categoría y no a una categoría común y corriente. */
-  subCategoryId?: number;
+  isSubCategory: boolean;
 
   @ValidateNested({ each: true })
   @Type(() => UpdateVariantDto)
   @IsOptional()
-  /** Variantes asociadas al producto. */
   variants?: UpdateVariantDto[];
+
+  @ValidateNested({ each: true })
+  @Type(() => CreateVariantCategoryDto)
+  @IsOptional()
+  variantCategory?: CreateVariantCategoryDto;
 }
