@@ -31,4 +31,13 @@ export interface ISubCategoryService {
    * @returns {Promise<SubCategory>}
    */
   getSubCategoryById(id: number): Promise<SubCategory>;
+
+  /**
+   * Busca una subcategoria por el identificador de su categoria padre.
+   *
+   * @param {number} categoryId El identificador de la categoria padre.
+   *
+   * @returns {Promise<Array<SubCategory>>}
+   */
+  getSubCategoriesByParent(categoryId: number): Promise<Array<SubCategory>>;
 }

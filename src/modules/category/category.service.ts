@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { ICategoryService } from './category.interface';
 import { Category, Prisma } from '@prisma/client';
 import { PrismaService } from 'src/providers/prisma.service';
@@ -28,6 +28,24 @@ export class CategoryService implements ICategoryService {
   }
 
   async getCategoryById(id: number): Promise<Category> {
-    return await this.#categories.findUnique({ where: { id } });
+    try {
+      return await this.#categories.findUnique({ where: { id } });
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError)
+        throw new NotFoundException(
+          `No se encontro la categoria con ID: ${id}`,
+        );
+
+      this.#logger.error(`Failed to search category by ID ${id}: ${e}`);
+    }
+  }
+  async updateCategoryByid(id: number, data: Category) {
+    return await this.#categories.update({
+      where: { id },
+      data: {
+        name: data.name,
+        description: data.description,
+      },
+    });
   }
 }
