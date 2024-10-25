@@ -26,11 +26,11 @@ export class CreateVariantDto {
   @Min(0) // stockMin no puede ser negativo
   stockMin: number;
 
-  @IsInt() 
-  @IsNotEmpty() 
-  productId: number; 
+  @IsInt()
+  @IsNotEmpty()
+  productId: number;
 
-  @IsInt() 
-  @IsNotEmpty() 
-  variantCategoryId: number; 
+  @IsInt()
+  @IsNotEmpty()
+  variantCategoryId: number;
 }

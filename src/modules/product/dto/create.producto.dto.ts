@@ -12,7 +12,7 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { UpdateVariantDto } from 'src/modules/stock/dto/update-variant.dto';
-import { CreateVariantCategoryDto } from 'src/modules/variantCategory/dto/create-variantCategory.dto';
+import { CreateVariantCategoryDto } from 'src/modules/category/variant/dto/create-variantCategory.dto';
 
 export class CreateProductDto {
   @IsString()
@@ -57,7 +57,7 @@ export class CreateProductDto {
   variants?: UpdateVariantDto[];
 
   @ValidateNested({ each: true })
-  @Type(() => CreateVariantCategoryDto) 
+  @Type(() => CreateVariantCategoryDto)
   @IsOptional()
   variantCategory?: CreateVariantCategoryDto;
 }

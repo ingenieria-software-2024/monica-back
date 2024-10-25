@@ -26,7 +26,6 @@ export class StockController {
     return this.stockService.createVariant(createVariantDto);
   }
 
-
   @Get()
   async getAllVariants() {
     return this.stockService.getAllVariants();

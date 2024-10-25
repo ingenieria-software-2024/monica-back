@@ -15,7 +15,7 @@ import { SubCategoryService } from '../category/subcategory.service';
 import { ISubCategoryService } from '../category/subcategory.interface';
 import { CreateProductDto } from './dto/create.producto.dto';
 import { UpdateProductDto } from './dto/update.producto.dto';
-import { VariantCategoryService } from '../variantCategory/variantCategory.service';
+import { VariantCategoryService } from '../category/variant/variantCategory.service';
 
 @Injectable()
 export class ProductService implements IProductService {
