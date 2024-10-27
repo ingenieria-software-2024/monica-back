@@ -3,7 +3,7 @@ import { CreateVariantDto } from './dto/create-variant.dto';
 import { UpdateVariantDto } from './dto/update-variant.dto';
 import { IStockService } from './stock.interface';
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
-import { PrismaService } from 'src/providers/prisma.service';
+import { PrismaService } from '../../providers/prisma.service';
 
 @Injectable()
 export class StockService implements IStockService {
