@@ -12,27 +12,29 @@ describe('StockService', () => {
   // Configuración del módulo de pruebas antes de cada test
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [StockService, {
-        provide: PrismaService,
-        useValue: {
-          product: {
-            findUnique: jest.fn(),
-          },
-          productVariant: {
-            create: jest.fn(),
-            update: jest.fn(),
-            findMany: jest.fn(),
-            delete: jest.fn(),
-            findUnique: jest.fn(),
+      providers: [
+        StockService,
+        {
+          provide: PrismaService,
+          useValue: {
+            product: {
+              findUnique: jest.fn(),
+            },
+            productVariant: {
+              create: jest.fn(),
+              update: jest.fn(),
+              findMany: jest.fn(),
+              delete: jest.fn(),
+              findUnique: jest.fn(),
+            },
           },
         },
-      }],
+      ],
     }).compile();
-  
+
     stockService = module.get<StockService>(StockService);
     prismaService = module.get<PrismaService>(PrismaService);
   });
-  
 
   describe('Definición y gestión de variantes de productos', () => {
     it('debe guardar correctamente las variantes para un producto', async () => {
@@ -48,7 +50,9 @@ describe('StockService', () => {
       // Mock de la búsqueda de producto
       prismaService.product.findUnique = jest.fn().mockResolvedValue({ id: 1 });
       // Mock de la creación de variante
-      prismaService.productVariant.create = jest.fn().mockResolvedValue(createVariantDto);
+      prismaService.productVariant.create = jest
+        .fn()
+        .mockResolvedValue(createVariantDto);
 
       const result = await stockService.createVariant(createVariantDto);
 
@@ -99,7 +103,7 @@ describe('StockService', () => {
         id: 1,
         productId: 1,
         variantCategoryId: 2,
-        stock: 5, 
+        stock: 5,
       };
 
       // Mock de la actualización de variante
@@ -152,7 +156,9 @@ describe('StockService', () => {
       ];
 
       // Mock de la búsqueda de variantes
-      prismaService.productVariant.findMany = jest.fn().mockResolvedValue(mockVariants);
+      prismaService.productVariant.findMany = jest
+        .fn()
+        .mockResolvedValue(mockVariants);
 
       const result = await stockService.getAllVariants();
 
@@ -169,7 +175,9 @@ describe('StockService', () => {
       const mockVariant = { id: 1, name: 'Camiseta - Rojo - M' };
 
       // Mock de la eliminación de variante
-      prismaService.productVariant.delete = jest.fn().mockResolvedValue(mockVariant);
+      prismaService.productVariant.delete = jest
+        .fn()
+        .mockResolvedValue(mockVariant);
 
       const result = await stockService.deleteVariant(1);
 
@@ -184,9 +192,13 @@ describe('StockService', () => {
   describe('Buscar una variante por ID', () => {
     it('debe lanzar una excepción si no encuentra la variante', async () => {
       // Mock para simular que la variante no existe
-      prismaService.productVariant.findUnique = jest.fn().mockResolvedValue(null);
+      prismaService.productVariant.findUnique = jest
+        .fn()
+        .mockResolvedValue(null);
 
-      await expect(stockService.getVariantById(99)).rejects.toThrow(NotFoundException);
+      await expect(stockService.getVariantById(99)).rejects.toThrow(
+        NotFoundException,
+      );
       expect(prismaService.productVariant.findUnique).toHaveBeenCalledWith({
         where: { id: 99 },
         include: { variantCategory: { select: { name: true } } },
@@ -201,7 +213,9 @@ describe('StockService', () => {
       };
 
       // Mock de la búsqueda de variante
-      prismaService.productVariant.findUnique = jest.fn().mockResolvedValue(mockVariant);
+      prismaService.productVariant.findUnique = jest
+        .fn()
+        .mockResolvedValue(mockVariant);
 
       const result = await stockService.getVariantById(1);
 
