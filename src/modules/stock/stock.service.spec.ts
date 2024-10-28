@@ -37,7 +37,7 @@ describe('StockService', () => {
   });
 
   describe('Definición y gestión de variantes de productos', () => {
-    it('debe guardar correctamente las variantes para un producto', async () => {
+    it('las variantes deben ser guardadas correctamente para el producto "Camiseta"', async () => {
       const createVariantDto: CreateVariantDto = {
         name: ' Rojo ',
         stock: 10,
@@ -48,7 +48,9 @@ describe('StockService', () => {
       };
 
       // Mock de la búsqueda de producto
-      prismaService.product.findUnique = jest.fn().mockResolvedValue({ id: 1 });
+      prismaService.product.findUnique = jest
+        .fn()
+        .mockResolvedValue({ id: 1, name: 'Camiseta' });
       // Mock de la creación de variante
       prismaService.productVariant.create = jest
         .fn()
@@ -98,7 +100,7 @@ describe('StockService', () => {
   });
 
   describe('Niveles de inventario por variante', () => {
-    it('debe permitir actualizar el nivel de inventario por variante', async () => {
+    it('cada variante debe tener su propio nivel de inventario reflejado correctamente', async () => {
       const updateVariantDto: UpdateVariantDto = {
         id: 1,
         productId: 1,
