@@ -79,7 +79,7 @@
     "testEnvironment": "node"
   },
   "lint-staged": {
-    "*.js": "eslint --cache --fix && prettier --write",
-    "*.ts": "eslint --cache --fix && prettier --write"
+    "*.js": "eslint --cache --fix",
+    "*.ts": "eslint --cache --fix"
   }
 }
