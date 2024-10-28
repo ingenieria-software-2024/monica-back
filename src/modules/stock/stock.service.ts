@@ -3,7 +3,7 @@ import { CreateVariantDto } from './dto/create-variant.dto';
 import { UpdateVariantDto } from './dto/update-variant.dto';
 import { IStockService } from './stock.interface';
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
-import { PrismaService } from 'src/providers/prisma.service';
+import { PrismaService } from '../../providers/prisma.service';
 
 @Injectable()
 export class StockService implements IStockService {
@@ -79,23 +79,22 @@ export class StockService implements IStockService {
    * @returns {Promise<ProductVariant>}
    */
   async getVariantById(id: number): Promise<ProductVariant> {
-    try {
-      return await this.prisma.productVariant.findUnique({
-        where: { id },
-        include: {
-          variantCategory: {
-            // Incluir la categoría de variante
-            select: {
-              name: true, // Obtener solo el nombre
-            },
+    const variant = await this.prisma.productVariant.findUnique({
+      where: { id },
+      include: {
+        variantCategory: {
+          select: {
+            name: true,
           },
         },
-      });
-    } catch (e) {
-      if (e instanceof Prisma.PrismaClientKnownRequestError)
-        throw new NotFoundException(`No se encontró la variante con ID: ${id}`);
-      this.#logger.error(`Failed to search variant by ID ${id}: ${e}`);
+      },
+    });
+
+    if (!variant) {
+      throw new NotFoundException(`No se encontró la variante con ID: ${id}`);
     }
+
+    return variant;
   }
 
   /**
