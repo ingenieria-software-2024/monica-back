@@ -129,6 +129,7 @@ export class ProductService implements IProductService {
   /**Metodo para obtener todos los productos registrados */
   async getProducts(): Promise<Array<Product>> {
     return await this.#products.findMany({
+      where: { isDeleted: false }, // Filtrar los productos que no han sido eliminados lógicamente
       include: {
         ProductVariant: true, // Incluir las variantes de producto
       },
@@ -137,12 +138,17 @@ export class ProductService implements IProductService {
 
   /**Metodo para obtener un producto por su ID */
   async getProductById(id: number): Promise<Product> {
-    return await this.#products.findUnique({
-      where: { id },
+    const product = await this.#products.findUnique({
+      where: { id, isDeleted: false }, // Filtrar los productos que no han sido eliminados lógicamente
       include: {
         ProductVariant: true, // Incluir las variantes de producto
       },
     });
+
+    if (!product) {
+      throw new NotFoundException(`No se encontró el producto con ID: ${id}`);
+    }
+    return product;
   }
 
   /** Metodo para actualizar un producto */
@@ -214,6 +220,21 @@ export class ProductService implements IProductService {
           },
         }),
       },
+    });
+  }
+
+  async deleteProduct(id: number): Promise<Product> {
+    const existingProduct = await this.#products.findUnique({ 
+      where: { id, isDeleted: false } // Filtro de eliminados con logica
+    });
+
+    if (!existingProduct) {
+      throw new NotFoundException(`No se encontró el producto con ID: ${id}`);
+    }
+
+    return await this.#products.update({
+      where: { id },
+      data: { isDeleted: true }, // Realizar un borrado lógico del producto
     });
   }
 }

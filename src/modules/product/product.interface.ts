@@ -39,4 +39,12 @@ export interface IProductService {
     id: number,
     updateProductDto: UpdateProductDto,
   ): Promise<Product>;
+
+  /**
+   * Realiza un borrado lógico del producto.
+   *
+   * @param {number} id El identificador del producto
+   * @returns {Promise<Product>}
+   */
+  deleteProduct(id: number): Promise<Product>;
 }
