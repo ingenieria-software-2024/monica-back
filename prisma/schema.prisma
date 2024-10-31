@@ -62,6 +62,7 @@ model Product {
   variantCategories VariantCategory[] @relation("ProductVariantCategories") 
   ProductVariant ProductVariant[]
   HistoricProduct HistoricProduct[]
+  isDeleted Boolean @default(false)
 }
 
 // Esta entidad sirve como auditora para los productos creados y sus modificaciones de precio en algún momento dado.
