@@ -224,14 +224,23 @@ export class ProductService implements IProductService {
   }
 
   async deleteProduct(id: number): Promise<Product> {
-    const existingProduct = await this.#products.findUnique({ 
-      where: { id, isDeleted: false } // Filtro de eliminados con logica
+    const existingProduct = await this.#products.findUnique({
+      where: { id, isDeleted: false }, // Filtro de eliminados con lógica
+      include: { ProductVariant: true }, // Incluir variantes de producto
     });
 
     if (!existingProduct) {
       throw new NotFoundException(`No se encontró el producto con ID: ${id}`);
     }
 
+    // Borrar variantes asociadas al producto
+    if (existingProduct.ProductVariant && existingProduct.ProductVariant.length > 0) {
+      for (const variant of existingProduct.ProductVariant) {
+        await this.variantCategoryService.deleteVariantCategory(variant.id);
+      }
+    }
+
+    // Realizar un borrado lógico del producto
     return await this.#products.update({
       where: { id },
       data: { isDeleted: true }, // Realizar un borrado lógico del producto
