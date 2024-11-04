@@ -18,11 +18,6 @@ export class ProductVariantService implements IProductVariantService {
     this.#products = prisma.product;
   }
 
-  /**
-   * Crea una nueva variante
-   * @param {CreateVariantDto} createVariantDto
-   * @returns {Promise<ProductVariant>}
-   */
   async createVariant(
     createVariantDto: CreateVariantDto,
   ): Promise<ProductVariant> {
@@ -58,10 +53,6 @@ export class ProductVariantService implements IProductVariantService {
     });
   }
 
-  /**
-   * Obtener listado de todas las variantes
-   * @returns {Promise<ProductVariant[]>}
-   */
   async getAllVariants(): Promise<ProductVariant[]> {
     return await this.#variants.findMany({
       include: {
@@ -75,11 +66,6 @@ export class ProductVariantService implements IProductVariantService {
     });
   }
 
-  /**
-   * Busca una variante por su identificador.
-   * @param {number} id
-   * @returns {Promise<ProductVariant>}
-   */
   async getVariantById(id: number): Promise<ProductVariant> {
     const variant = await this.#variants.findUnique({
       where: { id },
@@ -99,12 +85,28 @@ export class ProductVariantService implements IProductVariantService {
     return variant;
   }
 
-  /**
-   * Actualizar una variante registrada
-   * @param {number} id
-   * @param {UpdateVariantDto} updateVariantDto
-   * @returns {Promise<ProductVariant>}
-   */
+  async getVariantsByProductId(
+    productId: number,
+  ): Promise<Array<ProductVariant>> {
+    return await this.#variants.findMany({
+      where: { productId },
+      include: {
+        product: {
+          select: {
+            id: true,
+            name: true,
+            description: true,
+          },
+        },
+        variantCategory: {
+          select: {
+            name: true,
+          },
+        },
+      },
+    });
+  }
+
   async updateVariant(
     id: number,
     updateVariantDto: UpdateVariantDto,
@@ -123,11 +125,6 @@ export class ProductVariantService implements IProductVariantService {
     });
   }
 
-  /**
-   * Borrar alguna variante existente
-   * @param {number} id
-   * @returns {Promise<ProductVariant>}
-   */
   async deleteVariant(id: number): Promise<ProductVariant> {
     return await this.#variants.delete({
       where: { id },

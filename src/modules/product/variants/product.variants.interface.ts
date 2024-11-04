@@ -27,6 +27,15 @@ export interface IProductVariantService {
   getVariantById(id: number): Promise<ProductVariant>;
 
   /**
+   * Busca las variantes asociadas a un producto por su ID.
+   *
+   * @param {number} productId La ID del producto padre del cual buscar las variantes.
+   *
+   * @returns {Promise<Array<ProductVariant>>} El listado de variantes presentes en un producto, si las hay.
+   */
+  getVariantsByProductId(productId: number): Promise<Array<ProductVariant>>;
+
+  /**
    * Actualizar una variante registrada
    *
    * @param {number} id

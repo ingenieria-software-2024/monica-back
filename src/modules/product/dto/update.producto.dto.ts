@@ -1,4 +1,3 @@
-import { Type } from 'class-transformer';
 import {
   IsString,
   IsNumber,
@@ -9,9 +8,7 @@ import {
   IsDefined,
   Min,
   IsBoolean,
-  ValidateNested,
 } from 'class-validator';
-import { UpdateVariantDto } from 'src/modules/product/variants/dto/update-variant.dto';
 
 export class UpdateProductDto {
   @IsString()
@@ -55,10 +52,4 @@ export class UpdateProductDto {
   @IsDefined()
   /** Indicador de si el ID provisto pertenece a una sub-categoría y no a una categoría común y corriente. */
   subCategoryId?: number;
-
-  @ValidateNested({ each: true })
-  @Type(() => UpdateVariantDto)
-  @IsOptional()
-  /** Variantes asociadas al producto. */
-  variants?: UpdateVariantDto[];
 }
