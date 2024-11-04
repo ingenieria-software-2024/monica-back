@@ -11,9 +11,11 @@ export class ProductVariantService implements IProductVariantService {
 
   /** Accesor para las operaciones CRUD de las variantes */
   readonly #variants: Prisma.ProductVariantDelegate;
+  readonly #products: Prisma.ProductDelegate;
 
   constructor(private readonly prisma: PrismaService) {
     this.#variants = prisma.productVariant;
+    this.#products = prisma.product;
   }
 
   /**
@@ -24,7 +26,7 @@ export class ProductVariantService implements IProductVariantService {
   async createVariant(
     createVariantDto: CreateVariantDto,
   ): Promise<ProductVariant> {
-    const productExists = await this.prisma.product.findUnique({
+    const productExists = await this.#products.findUnique({
       where: { id: createVariantDto.productId }, // Usar productId del DTO
     });
 
@@ -35,7 +37,7 @@ export class ProductVariantService implements IProductVariantService {
     }
 
     // Asegúrate de que el DTO incluya variantCategoryId
-    return await this.prisma.productVariant.create({
+    return await this.#variants.create({
       data: {
         name: createVariantDto.name,
         stock: createVariantDto.stock,
@@ -61,7 +63,7 @@ export class ProductVariantService implements IProductVariantService {
    * @returns {Promise<ProductVariant[]>}
    */
   async getAllVariants(): Promise<ProductVariant[]> {
-    return await this.prisma.productVariant.findMany({
+    return await this.#variants.findMany({
       include: {
         variantCategory: {
           // Incluir la categoría de variante
@@ -79,7 +81,7 @@ export class ProductVariantService implements IProductVariantService {
    * @returns {Promise<ProductVariant>}
    */
   async getVariantById(id: number): Promise<ProductVariant> {
-    const variant = await this.prisma.productVariant.findUnique({
+    const variant = await this.#variants.findUnique({
       where: { id },
       include: {
         variantCategory: {
@@ -107,7 +109,7 @@ export class ProductVariantService implements IProductVariantService {
     id: number,
     updateVariantDto: UpdateVariantDto,
   ): Promise<ProductVariant> {
-    return this.prisma.productVariant.update({
+    return this.#variants.update({
       where: { id },
       data: {
         ...(updateVariantDto.name && { name: updateVariantDto.name }),
@@ -136,7 +138,7 @@ export class ProductVariantService implements IProductVariantService {
    * @returns {Promise<ProductVariant>}
    */
   async deleteVariant(id: number): Promise<ProductVariant> {
-    return await this.prisma.productVariant.delete({
+    return await this.#variants.delete({
       where: { id },
     });
   }
