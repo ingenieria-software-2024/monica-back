@@ -105,7 +105,10 @@ describe('Variantes de Producto y Productos', () => {
   describe('Niveles de inventario por variante', () => {
     it('cada variante debe tener su propio nivel de inventario reflejado correctamente', async () => {
       const updateVariantDto: UpdateVariantDto = {
+        name: 'Camiseta Roja',
+        description: 'Camiseta roja tamaño M',
         stock: 5,
+        stockMin: 3,
       };
 
       const variantId = 1;
