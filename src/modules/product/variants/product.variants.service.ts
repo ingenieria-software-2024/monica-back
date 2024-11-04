@@ -109,26 +109,17 @@ export class ProductVariantService implements IProductVariantService {
     id: number,
     updateVariantDto: UpdateVariantDto,
   ): Promise<ProductVariant> {
+    // Parsear campos de DTO definidos.
+    const data: Prisma.ProductVariantUpdateInput = {
+      name: updateVariantDto?.name ?? Prisma.skip,
+      description: updateVariantDto?.description ?? Prisma.skip,
+      stock: updateVariantDto?.stock ?? Prisma.skip,
+      stockMin: updateVariantDto?.stockMin ?? Prisma.skip,
+    };
+
     return this.#variants.update({
       where: { id },
-      data: {
-        ...(updateVariantDto.name && { name: updateVariantDto.name }),
-        ...(updateVariantDto.description && {
-          description: updateVariantDto.description,
-        }),
-        ...(updateVariantDto.stock !== undefined && {
-          stock: updateVariantDto.stock,
-        }),
-        ...(updateVariantDto.stockMin !== undefined && {
-          stockMin: updateVariantDto.stockMin,
-        }),
-        ...(updateVariantDto.productId && {
-          productId: updateVariantDto.productId,
-        }), // Agregar productId
-        ...(updateVariantDto.variantCategoryId && {
-          variantCategoryId: updateVariantDto.variantCategoryId, // Agregar variantCategoryId
-        }),
-      },
+      data,
     });
   }
 
