@@ -18,22 +18,22 @@ import { IProductVariantService } from './product.variants.interface';
 export class ProductVariantController {
   constructor(
     @Inject(ProductVariantService)
-    private readonly stockService: IProductVariantService,
+    private readonly service: IProductVariantService,
   ) {}
 
   @Post()
   async createVariant(@Body() createVariantDto: CreateVariantDto) {
-    return this.stockService.createVariant(createVariantDto);
+    return this.service.createVariant(createVariantDto);
   }
 
   @Get()
   async getAllVariants() {
-    return this.stockService.getAllVariants();
+    return this.service.getAllVariants();
   }
 
   @Get('/:id')
   async getVariantById(@Param('id', ParseIntPipe) id: number) {
-    return this.stockService.getVariantById(id);
+    return this.service.getVariantById(id);
   }
 
   @Put('/:id')
@@ -41,11 +41,11 @@ export class ProductVariantController {
     @Param('id', ParseIntPipe) id: number,
     @Body() updateVariantDto: UpdateVariantDto,
   ) {
-    return this.stockService.updateVariant(id, updateVariantDto);
+    return this.service.updateVariant(id, updateVariantDto);
   }
 
   @Delete('/:id')
   async deleteVariant(@Param('id', ParseIntPipe) id: number) {
-    return this.stockService.deleteVariant(id);
+    return this.service.deleteVariant(id);
   }
 }
