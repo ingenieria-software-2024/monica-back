@@ -9,16 +9,16 @@ import {
   ParseIntPipe,
   Inject,
 } from '@nestjs/common';
-import { StockService } from './stock.service';
+import { ProductVariantService } from './product.variants.service';
 import { CreateVariantDto } from './dto/create-variant.dto';
 import { UpdateVariantDto } from './dto/update-variant.dto';
-import { IStockService } from './stock.interface';
+import { IProductVariantService } from './product.variants.interface';
 
 @Controller('/variants')
-export class StockController {
+export class ProductVariantController {
   constructor(
-    @Inject(StockService)
-    private readonly stockService: IStockService,
+    @Inject(ProductVariantService)
+    private readonly stockService: IProductVariantService,
   ) {}
 
   @Post()

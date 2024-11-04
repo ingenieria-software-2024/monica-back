@@ -1,13 +1,13 @@
 import { Prisma, ProductVariant } from '@prisma/client';
 import { CreateVariantDto } from './dto/create-variant.dto';
 import { UpdateVariantDto } from './dto/update-variant.dto';
-import { IStockService } from './stock.interface';
+import { IProductVariantService } from './product.variants.interface';
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
-import { PrismaService } from '../../providers/prisma.service';
+import { PrismaService } from '../../../providers/prisma.service';
 
 @Injectable()
-export class StockService implements IStockService {
-  readonly #logger = new Logger(StockService.name);
+export class ProductVariantService implements IProductVariantService {
+  readonly #logger = new Logger(ProductVariantService.name);
 
   /** Accesor para las operaciones CRUD de las variantes */
   readonly #variants: Prisma.ProductVariantDelegate;

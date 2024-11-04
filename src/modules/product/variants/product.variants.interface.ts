@@ -2,7 +2,7 @@ import { ProductVariant } from '@prisma/client';
 import { CreateVariantDto } from './dto/create-variant.dto';
 import { UpdateVariantDto } from './dto/update-variant.dto';
 
-export interface IStockService {
+export interface IProductVariantService {
   /**
    * Crea una nueva variante
    * @param {CreateVariantDto} createVariantDto
