@@ -105,15 +105,24 @@ describe('Variantes de Producto y Productos', () => {
   describe('Niveles de inventario por variante', () => {
     it('cada variante debe tener su propio nivel de inventario reflejado correctamente', async () => {
       const updateVariantDto: UpdateVariantDto = {
-        id: 1,
-        productId: 1,
-        variantCategoryId: 2,
         stock: 5,
       };
 
+      const variantId = 1;
+
+      // Mock del fetch de la variante
+      prismaService.productVariant.findUnique = jest.fn().mockResolvedValue({
+        id: variantId,
+        name: 'Camiseta - L',
+        productId: 1,
+        variantCategoryId: 2,
+        stock: 10,
+        stockMin: 1,
+      });
+
       // Mock de la actualización de variante
       prismaService.productVariant.update = jest.fn().mockResolvedValue({
-        id: 1,
+        id: variantId,
         name: 'Camiseta - L',
         productId: 1,
         variantCategoryId: 2,
@@ -122,13 +131,13 @@ describe('Variantes de Producto y Productos', () => {
       });
 
       const result = await productVariantService.updateVariant(
-        1,
+        variantId,
         updateVariantDto,
       );
 
       // Verificación de las llamadas y resultados
       expect(prismaService.productVariant.update).toHaveBeenCalledWith({
-        where: { id: updateVariantDto.id },
+        where: { id: variantId },
         data: {
           ...(updateVariantDto.name && { name: updateVariantDto.name }),
           ...(updateVariantDto.description && {
@@ -140,8 +149,6 @@ describe('Variantes de Producto y Productos', () => {
           ...(updateVariantDto.stockMin !== undefined && {
             stockMin: updateVariantDto.stockMin,
           }),
-          productId: updateVariantDto.productId, // Incluye el productId
-          variantCategoryId: updateVariantDto.variantCategoryId, // Incluye el variantCategoryId
         },
       });
       expect(result.stock).toEqual(updateVariantDto.stock);
