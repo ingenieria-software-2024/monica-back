@@ -14,7 +14,7 @@ import { CreateVariantDto } from './dto/create-variant.dto';
 import { UpdateVariantDto } from './dto/update-variant.dto';
 import { IProductVariantService } from './product.variants.interface';
 
-@Controller('/variants')
+@Controller('/products/variants')
 export class ProductVariantController {
   constructor(
     @Inject(ProductVariantService)
