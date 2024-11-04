@@ -111,6 +111,16 @@ export class ProductVariantService implements IProductVariantService {
     id: number,
     updateVariantDto: UpdateVariantDto,
   ): Promise<ProductVariant> {
+    // Existe la variante a actualizar?
+    const variant = await this.#variants.findUnique({
+      where: { id },
+    });
+
+    if (!variant)
+      throw new NotFoundException(
+        `La variante de producto con ID ${id} no existe.`,
+      );
+
     // Parsear campos de DTO definidos.
     const data: Prisma.ProductVariantUpdateInput = {
       name: updateVariantDto?.name ?? Prisma.skip,
