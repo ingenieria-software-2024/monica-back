@@ -6,6 +6,7 @@
 
 generator client {
   provider = "prisma-client-js"
+  previewFeatures = ["strictUndefinedChecks"]
 }
 
 datasource db {
@@ -22,19 +23,19 @@ model VariantCategory {
 }
 
 model ProductVariant {
-  id                   Int                    @id @default(autoincrement())
-  name                 String
-  description          String?
-  stock                Int
-  stockMin             Int
-  productId            Int
-  variantCategoryId    Int // Referencia a la categoría de variante
-  product              Product                @relation(fields: [productId], references: [id])
-  variantCategory      VariantCategory        @relation(fields: [variantCategoryId], references: [id])
-  HistoricStockIngress HistoricStockIngress[]
+  id                Int                @id @default(autoincrement())
+  name              String
+  description       String?
+  stock             Int
+  stockMin          Int
+  productId         Int
+  variantCategoryId Int // Referencia a la categoría de variante
+  product           Product            @relation(fields: [productId], references: [id])
+  variantCategory   VariantCategory    @relation(fields: [variantCategoryId], references: [id])
+  HistoricStockLog  HistoricStockLog[]
 }
 
-model HistoricStockIngress {
+model HistoricStockLog {
   id               Int            @id @default(autoincrement())
   productVariantId Int
   productVariant   ProductVariant @relation(fields: [productVariantId], references: [id])
