@@ -5,7 +5,7 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
   previewFeatures = ["strictUndefinedChecks"]
 }
 
@@ -39,9 +39,11 @@ model HistoricStockLog {
   id               Int            @id @default(autoincrement())
   productVariantId Int
   productVariant   ProductVariant @relation(fields: [productVariantId], references: [id])
+  isIngress        Boolean
   quantity         Int
   createdAt        DateTime       @default(now())
   createdBy        String?
+  reason           String?
 }
 
 model Category {
