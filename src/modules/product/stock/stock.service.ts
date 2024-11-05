@@ -3,7 +3,7 @@ import { IStockService } from './stock.interface';
 import { Prisma, ProductVariant } from '@prisma/client';
 import { ProductVariantService } from '../variants/product.variants.service';
 import { IProductVariantService } from '../variants/product.variants.interface';
-import { PrismaService } from 'src/providers/prisma.service';
+import { PrismaService } from '../../../providers/prisma.service';
 
 @Injectable()
 export class StockService implements IStockService {
