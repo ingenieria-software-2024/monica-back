@@ -1,19 +1,19 @@
 import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { PrismaService } from '../../providers/prisma.service';
-import { StockService } from './stock.service';
+import { PrismaService } from '../../../providers/prisma.service';
+import { ProductVariantService } from './product.variants.service';
 import { CreateVariantDto } from './dto/create-variant.dto';
 import { UpdateVariantDto } from './dto/update-variant.dto';
 
-describe('StockService', () => {
-  let stockService: StockService;
+describe('Variantes de Producto y Productos', () => {
+  let productVariantService: ProductVariantService;
   let prismaService: PrismaService;
 
   // Configuración del módulo de pruebas antes de cada test
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        StockService,
+        ProductVariantService,
         {
           provide: PrismaService,
           useValue: {
@@ -32,7 +32,9 @@ describe('StockService', () => {
       ],
     }).compile();
 
-    stockService = module.get<StockService>(StockService);
+    productVariantService = module.get<ProductVariantService>(
+      ProductVariantService,
+    );
     prismaService = module.get<PrismaService>(PrismaService);
   });
 
@@ -56,7 +58,8 @@ describe('StockService', () => {
         .fn()
         .mockResolvedValue(createVariantDto);
 
-      const result = await stockService.createVariant(createVariantDto);
+      const result =
+        await productVariantService.createVariant(createVariantDto);
 
       // Verificación de las llamadas y resultados
       expect(prismaService.product.findUnique).toHaveBeenCalledWith({
@@ -91,7 +94,7 @@ describe('StockService', () => {
       prismaService.product.findUnique = jest.fn().mockResolvedValue(null);
 
       await expect(
-        stockService.createVariant(createVariantDto),
+        productVariantService.createVariant(createVariantDto),
       ).rejects.toThrow(NotFoundException);
       expect(prismaService.product.findUnique).toHaveBeenCalledWith({
         where: { id: createVariantDto.productId },
@@ -102,15 +105,27 @@ describe('StockService', () => {
   describe('Niveles de inventario por variante', () => {
     it('cada variante debe tener su propio nivel de inventario reflejado correctamente', async () => {
       const updateVariantDto: UpdateVariantDto = {
-        id: 1,
+        name: 'Camiseta Roja',
+        description: 'Camiseta roja tamaño M',
+        stock: 5,
+        stockMin: 3,
+      };
+
+      const variantId = 1;
+
+      // Mock del fetch de la variante
+      prismaService.productVariant.findUnique = jest.fn().mockResolvedValue({
+        id: variantId,
+        name: 'Camiseta - L',
         productId: 1,
         variantCategoryId: 2,
-        stock: 5,
-      };
+        stock: 10,
+        stockMin: 1,
+      });
 
       // Mock de la actualización de variante
       prismaService.productVariant.update = jest.fn().mockResolvedValue({
-        id: 1,
+        id: variantId,
         name: 'Camiseta - L',
         productId: 1,
         variantCategoryId: 2,
@@ -118,11 +133,14 @@ describe('StockService', () => {
         stockMin: 1,
       });
 
-      const result = await stockService.updateVariant(1, updateVariantDto);
+      const result = await productVariantService.updateVariant(
+        variantId,
+        updateVariantDto,
+      );
 
       // Verificación de las llamadas y resultados
       expect(prismaService.productVariant.update).toHaveBeenCalledWith({
-        where: { id: updateVariantDto.id },
+        where: { id: variantId },
         data: {
           ...(updateVariantDto.name && { name: updateVariantDto.name }),
           ...(updateVariantDto.description && {
@@ -134,8 +152,6 @@ describe('StockService', () => {
           ...(updateVariantDto.stockMin !== undefined && {
             stockMin: updateVariantDto.stockMin,
           }),
-          productId: updateVariantDto.productId, // Incluye el productId
-          variantCategoryId: updateVariantDto.variantCategoryId, // Incluye el variantCategoryId
         },
       });
       expect(result.stock).toEqual(updateVariantDto.stock);
@@ -162,7 +178,7 @@ describe('StockService', () => {
         .fn()
         .mockResolvedValue(mockVariants);
 
-      const result = await stockService.getAllVariants();
+      const result = await productVariantService.getAllVariants();
 
       // Verificación de las llamadas y resultados
       expect(prismaService.productVariant.findMany).toHaveBeenCalledWith({
@@ -181,7 +197,7 @@ describe('StockService', () => {
         .fn()
         .mockResolvedValue(mockVariant);
 
-      const result = await stockService.deleteVariant(1);
+      const result = await productVariantService.deleteVariant(1);
 
       // Verificación de las llamadas y resultados
       expect(prismaService.productVariant.delete).toHaveBeenCalledWith({
@@ -198,7 +214,7 @@ describe('StockService', () => {
         .fn()
         .mockResolvedValue(null);
 
-      await expect(stockService.getVariantById(99)).rejects.toThrow(
+      await expect(productVariantService.getVariantById(99)).rejects.toThrow(
         NotFoundException,
       );
       expect(prismaService.productVariant.findUnique).toHaveBeenCalledWith({
@@ -219,7 +235,7 @@ describe('StockService', () => {
         .fn()
         .mockResolvedValue(mockVariant);
 
-      const result = await stockService.getVariantById(1);
+      const result = await productVariantService.getVariantById(1);
 
       // Verificación de las llamadas y resultados
       expect(prismaService.productVariant.findUnique).toHaveBeenCalledWith({

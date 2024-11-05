@@ -11,7 +11,7 @@ import {
   Length,
   ValidateNested,
 } from 'class-validator';
-import { UpdateVariantDto } from 'src/modules/stock/dto/update-variant.dto';
+import { UpdateVariantDto } from 'src/modules/product/variants/dto/update-variant.dto';
 import { CreateVariantCategoryDto } from 'src/modules/category/variant/dto/create.variant.category.dto';
 
 export class CreateProductDto {

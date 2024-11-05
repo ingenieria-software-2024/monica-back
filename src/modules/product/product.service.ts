@@ -16,6 +16,9 @@ import { ISubCategoryService } from '../category/subcategory.interface';
 import { CreateProductDto } from './dto/create.producto.dto';
 import { UpdateProductDto } from './dto/update.producto.dto';
 import { VariantCategoryService } from '../category/variant/variant.category.service';
+import { IVariantCategoryService } from '../category/variant/variant.category.interface';
+import { ProductVariantService } from './variants/product.variants.service';
+import { IProductVariantService } from './variants/product.variants.interface';
 
 @Injectable()
 export class ProductService implements IProductService {
@@ -26,10 +29,13 @@ export class ProductService implements IProductService {
 
   constructor(
     private readonly prisma: PrismaService,
-    private readonly variantCategoryService: VariantCategoryService,
+    @Inject(VariantCategoryService)
+    private readonly variantCategoryService: IVariantCategoryService,
     @Inject(CategoryService) private readonly categories: ICategoryService,
     @Inject(SubCategoryService)
     private readonly subCategories: ISubCategoryService,
+    @Inject(ProductVariantService)
+    private readonly productVariants: IProductVariantService,
   ) {
     this.#products = prisma.product;
   }
@@ -150,15 +156,8 @@ export class ProductService implements IProductService {
     id: number,
     updateProductDto: UpdateProductDto,
   ): Promise<Product> {
-    const {
-      name,
-      price,
-      imageUrl,
-      description,
-      categoryId,
-      subCategoryId,
-      variants,
-    } = updateProductDto;
+    const { name, price, imageUrl, description, categoryId, subCategoryId } =
+      updateProductDto;
 
     // Verificar si el producto existe.
     const existingProduct = await this.#products.findUnique({ where: { id } });
@@ -184,6 +183,9 @@ export class ProductService implements IProductService {
         );
       }
     }
+
+    // Obtener las variantes del producto.
+    const variants = await this.productVariants.getVariantsByProductId(id);
 
     // Mapear los `UpdateVariantDto` a solo los IDs
     const variantIds = variants
