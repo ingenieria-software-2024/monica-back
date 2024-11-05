@@ -39,6 +39,7 @@ model Category {
   description String?
   SubCategory SubCategory[]
   Product Product[]
+  isDeleted Boolean @default(false)
 }
 
 model SubCategory {
@@ -47,6 +48,7 @@ model SubCategory {
   description String?
   category Category @relation(fields: [id], references: [id])
   Product Product[]
+  isDeleted Boolean @default(false)
 }
 
 model Product {
