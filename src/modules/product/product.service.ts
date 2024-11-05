@@ -6,15 +6,15 @@ import {
   Logger,
   NotFoundException,
 } from '@nestjs/common';
-import { IProductService } from './product.interface';
 import { Prisma, Product } from '@prisma/client';
 import { PrismaService } from 'src/providers/prisma.service';
+import { IProductService } from './product.interface';
+import { CreateProductDto } from './dto/create.producto.dto';
+import { UpdateProductDto } from './dto/update.producto.dto';
 import { CategoryService } from '../category/category.service';
 import { ICategoryService } from '../category/category.interface';
 import { SubCategoryService } from '../category/subcategory.service';
 import { ISubCategoryService } from '../category/subcategory.interface';
-import { CreateProductDto } from './dto/create.producto.dto';
-import { UpdateProductDto } from './dto/update.producto.dto';
 import { VariantCategoryService } from '../category/variant/variant.category.service';
 
 @Injectable()
@@ -226,17 +226,65 @@ export class ProductService implements IProductService {
   async deleteProduct(id: number): Promise<Product> {
     const existingProduct = await this.#products.findUnique({
       where: { id, isDeleted: false }, // Filtro de eliminados con lógica
-      include: { ProductVariant: true }, // Incluir variantes de producto
+      include: { // Incluir variantes de producto
+        ProductVariant: true,
+        category: true,
+        subCategory: true
+      },
     });
 
     if (!existingProduct) {
       throw new NotFoundException(`No se encontró el producto con ID: ${id}`);
     }
 
+    if (!existingProduct.ProductVariant) {
+      throw new NotFoundException(`No se encontraron variantes para el producto con ID: ${id}`);
+    }
+
+    if (!existingProduct.category) {
+      throw new NotFoundException(`No se encontró la categoría para el producto con ID: ${id}`);
+    }
+
+    if (!existingProduct.subCategory) {
+      throw new NotFoundException(`No se encontró la subcategoría para el producto con ID: ${id}`);
+    }
+
     // Borrar variantes asociadas al producto
     if (existingProduct.ProductVariant && existingProduct.ProductVariant.length > 0) {
       for (const variant of existingProduct.ProductVariant) {
         await this.variantCategoryService.deleteVariantCategory(variant.id);
+      }
+    }
+
+    // Verificar si es el último producto en su categoría
+    if (existingProduct.category) {
+      const productsInCategory = await this.#products.count({
+        where: {
+          categoryId: existingProduct.category.id,
+          isDeleted: false,
+          id: { not: id } // Excluir el producto actual
+        }
+      });
+
+      if (productsInCategory === 0) {
+        // Si es el último producto, eliminar la categoría
+        await this.categories.DeleteCategory(existingProduct.category.id);
+      }
+    }
+
+    // Verificar si es el último producto en su subcategoría
+    if (existingProduct.subCategory) {
+      const productsInSubCategory = await this.#products.count({
+        where: {
+          subCategoryId: existingProduct.subCategory.id,
+          isDeleted: false,
+          id: { not: id } // Excluir el producto actual
+        }
+      });
+
+      if (productsInSubCategory === 0) {
+        // Si es el último producto, eliminar la subcategoría
+        await this.subCategories.DeleteSubCategory(existingProduct.subCategory.id);
       }
     }
 
