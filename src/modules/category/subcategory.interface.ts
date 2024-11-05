@@ -40,4 +40,13 @@ export interface ISubCategoryService {
    * @returns {Promise<Array<SubCategory>>}
    */
   getSubCategoriesByParent(categoryId: number): Promise<Array<SubCategory>>;
+
+  /**
+   * Realiza un borrado lógico de una subcategoría por su identificador.
+   *
+   * @param {number} id El identificador de la subcategoría.
+   *
+   * @returns {Promise<SubCategory>}
+   */
+  DeleteSubCategory(id: number): Promise<SubCategory>;
 }
