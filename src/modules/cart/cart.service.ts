@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service';
+import { PrismaService } from '../../prisma/prisma.service';
 import { AddItemDto } from './dto/add-item.dto';
 import { UpdateQuantityDto } from './dto/update-quantity.dto';
 
@@ -10,14 +10,14 @@ export class CartService {
   async getCart(userId: number) {
     const cartItems = await this.prisma.cartItem.findMany({
       where: { userId },
-      include: { product: true },
+      include: { productVariant: true },
     });
     const total = cartItems.reduce((sum, item) => sum + item.totalPrice, 0);
     return { cart: cartItems, total };
   }
 
   async addToCart(userId: number, addItemDto: AddItemDto) {
-    const product = await this.prisma.product.findUnique({
+    const product = await this.prisma.productVariant.findUnique({
       where: { id: addItemDto.productId },
     });
 
@@ -26,7 +26,7 @@ export class CartService {
     }
 
     const existingCartItem = await this.prisma.cartItem.findFirst({
-      where: { userId, productId: addItemDto.productId },
+      where: { userId, productVariantId: addItemDto.productId },
     });
 
     if (existingCartItem) {
@@ -42,7 +42,7 @@ export class CartService {
       await this.prisma.cartItem.create({
         data: {
           userId,
-          productId: addItemDto.productId,
+          productVariantId: addItemDto.productId,
           quantity: addItemDto.quantity,
           totalPrice: product.price * addItemDto.quantity,
         },
@@ -54,8 +54,8 @@ export class CartService {
 
   async updateQuantity(userId: number, updateQuantityDto: UpdateQuantityDto) {
     const cartItem = await this.prisma.cartItem.findFirst({
-      where: { userId, productId: updateQuantityDto.productId },
-      include: { product: true },
+      where: { userId, productVariantId: updateQuantityDto.productId },
+      include: { productVariant: true },
     });
 
     if (!cartItem) {
@@ -67,7 +67,7 @@ export class CartService {
       where: { id: cartItem.id },
       data: {
         quantity: updateQuantityDto.quantity,
-        totalPrice: cartItem.product.price * updateQuantityDto.quantity,
+        totalPrice: cartItem.productVariant.price * updateQuantityDto.quantity,
       },
     });
 
@@ -76,7 +76,7 @@ export class CartService {
 
   async removeFromCart(userId: number, productId: number) {
     const cartItem = await this.prisma.cartItem.findFirst({
-      where: { userId, productId },
+      where: { userId, productVariantId: productId },
     });
 
     if (!cartItem) {
