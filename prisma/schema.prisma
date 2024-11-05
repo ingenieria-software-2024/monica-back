@@ -26,6 +26,8 @@ model ProductVariant {
   id                Int                @id @default(autoincrement())
   name              String
   description       String?
+  price             Float
+  imageUrl          String?
   stock             Int
   stockMin          Int
   productId         Int
@@ -64,18 +66,17 @@ model SubCategory {
 }
 
 model Product {
-  id                Int               @id @default(autoincrement())
-  name              String
-  description       String?
-  price             Float
-  imageUrl          String
-  categoryId        Int?
-  category          Category?         @relation(fields: [categoryId], references: [id])
-  subCategoryId     Int?
-  subCategory       SubCategory?      @relation(fields: [subCategoryId], references: [id])
-  variantCategories VariantCategory[] @relation("ProductVariantCategories")
-  ProductVariant    ProductVariant[]
-  HistoricProduct   HistoricProduct[]
+  id                     Int               @id @default(autoincrement())
+  name                   String
+  description            String?
+  defaultVariantImageUrl String
+  categoryId             Int?
+  category               Category?         @relation(fields: [categoryId], references: [id])
+  subCategoryId          Int?
+  subCategory            SubCategory?      @relation(fields: [subCategoryId], references: [id])
+  variantCategories      VariantCategory[] @relation("ProductVariantCategories")
+  ProductVariant         ProductVariant[]
+  HistoricProduct        HistoricProduct[]
 }
 
 // Esta entidad sirve como auditora para los productos creados y sus modificaciones de precio en algún momento dado.
