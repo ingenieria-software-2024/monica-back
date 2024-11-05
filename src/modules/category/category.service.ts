@@ -1,7 +1,9 @@
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException,Inject, InternalServerErrorException } from '@nestjs/common';
+import { PrismaService } from 'src/providers/prisma.service';
 import { ICategoryService } from './category.interface';
 import { Category, Prisma } from '@prisma/client';
-import { PrismaService } from 'src/providers/prisma.service';
+import { SubCategoryService } from './subcategory.service';
+import { ISubCategoryService } from './subcategory.interface';
 
 @Injectable()
 export class CategoryService implements ICategoryService {
@@ -10,42 +12,103 @@ export class CategoryService implements ICategoryService {
   /** Accesor para las operaciones CRUD de las categorias. */
   readonly #categories: Prisma.CategoryDelegate;
 
-  constructor(private readonly prisma: PrismaService) {
+  constructor(
+    private readonly prisma: PrismaService,
+    @Inject(SubCategoryService)
+    private readonly subCategories: ISubCategoryService,
+  ) {
     this.#categories = prisma.category;
   }
 
   async createCategory(name: string, description?: string): Promise<Category> {
-    const category: Prisma.CategoryCreateInput = {
-      name,
-      description,
-    };
+    try {
+      const category: Prisma.CategoryCreateInput = {
+        name,
+        description,
+      };
 
-    return await this.#categories.create({ data: category });
+      return await this.#categories.create({ data: category });
+    } catch (error) {
+      this.#logger.error(`Error al crear la categoría: ${error}`);
+      throw error;
+    }
   }
 
   async getCategories(): Promise<Array<Category>> {
-    return await this.#categories.findMany();
+    try {
+      return await this.#categories.findMany({
+        where: { isDeleted: false },
+      });
+    } catch (e) {
+      this.#logger.error(`Error al obtener las categorías: ${e}`);
+      throw e;
+    }
   }
 
   async getCategoryById(id: number): Promise<Category> {
     try {
-      return await this.#categories.findUnique({ where: { id } });
+      const category = await this.#categories.findUnique({ 
+        where: { id, isDeleted: false } 
+      });
+      
+      if (!category) {
+        throw new NotFoundException(`No se encontró la categoría con ID: ${id}`);
+      }
+      return category;
     } catch (e) {
       if (e instanceof Prisma.PrismaClientKnownRequestError)
-        throw new NotFoundException(
-          `No se encontro la categoria con ID: ${id}`,
-        );
+        throw new NotFoundException(`No se encontró la categoría con ID: ${id}`);
 
       this.#logger.error(`Failed to search category by ID ${id}: ${e}`);
+      throw e;
     }
   }
+
   async updateCategoryByid(id: number, data: Category) {
-    return await this.#categories.update({
-      where: { id },
-      data: {
-        name: data.name,
-        description: data.description,
-      },
-    });
+    try {
+      const category = await this.getCategoryById(id);
+      
+      if (!category) {
+        throw new NotFoundException(`No se encontró la categoría con ID: ${id}`);
+      }
+
+      return await this.#categories.update({
+        where: { id },
+        data: {
+          name: data.name,
+          description: data.description,
+        },
+      });
+    } catch (e) {
+      this.#logger.error(`Error al actualizar la categoría ${id}: ${e}`);
+      throw e;
+    }
+  }
+
+  async DeleteCategory(id: number): Promise<Category> {
+    try {
+      // Verificar si la categoría existe
+      const category = await this.getCategoryById(id);
+      
+      if (!category) {
+        throw new NotFoundException(`No se encontró la categoría con ID: ${id}`);
+      }
+      // Obtener todas las subcategorías de esta categoría
+      const subCategories = await this.subCategories.getSubCategoriesByParent(id);
+      // Eliminar lógicamente todas las subcategorías
+      if (subCategories && subCategories.length > 0) {
+        for (const subCategory of subCategories) {
+          await this.subCategories.DeleteSubCategory(subCategory.id);
+        }
+      }
+      // Realizar el borrado lógico de la categoría
+      return await this.#categories.update({
+        where: { id, isDeleted: false },
+        data: { isDeleted: true },
+      });
+    } catch (e) {
+      this.#logger.error(`Error al eliminar la categoría ${id}: ${e}`);
+      throw e;
+    }
   }
 }

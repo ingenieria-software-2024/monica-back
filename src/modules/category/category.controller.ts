@@ -9,12 +9,13 @@ import {
   Put,
   UsePipes,
   ValidationPipe,
+  Delete,
 } from '@nestjs/common';
-import { CategoryService } from './category.service';
 import { Category, SubCategory } from '@prisma/client';
 import { CreateCategoryDto } from './dto/create.category.dto';
-import { ISubCategoryService } from './subcategory.interface';
+import { CategoryService } from './category.service';
 import { ICategoryService } from './category.interface';
+import { ISubCategoryService } from './subcategory.interface';
 import { SubCategoryService } from './subcategory.service';
 
 @Controller('/categories')
@@ -75,5 +76,10 @@ export class CategoryController {
       categoryId,
       data.description,
     );
+  }
+
+  @Delete('/:id')
+  async DeleteCategory(@Param('id', ParseIntPipe) id: number): Promise<Category> {
+    return this.category.DeleteCategory(id);
   }
 }
