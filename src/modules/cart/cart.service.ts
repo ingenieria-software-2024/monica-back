@@ -1,5 +1,5 @@
 import { Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
-import { PrismaService } from '../../prisma/prisma.service';
+import { PrismaService } from '../../providers/prisma.service';
 import { AddItemDto } from './dto/add-item.dto';
 import { UpdateQuantityDto } from './dto/update-quantity.dto';
 import { ICartService } from './cart.interface';
