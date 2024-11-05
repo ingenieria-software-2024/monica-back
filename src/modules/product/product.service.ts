@@ -44,8 +44,7 @@ export class ProductService implements IProductService {
   async createProduct(createProductDto: CreateProductDto): Promise<Product> {
     const {
       name,
-      price,
-      imageUrl,
+      defaultVariantImageUrl,
       categoryId,
       isSubCategory,
       description,
@@ -102,23 +101,26 @@ export class ProductService implements IProductService {
     // Crear el producto con sus variantes.
     const productData: Prisma.ProductCreateInput = {
       name,
-      price,
-      imageUrl,
+      defaultVariantImageUrl,
       description,
       [isSubCategory ? 'subCategory' : 'category']: {
         connect: { id: categoryId },
       },
       ProductVariant: {
         create:
-          variants?.map(({ name, description, stock, stockMin }) => ({
-            name,
-            description: description || null, // Asegurarse de que sea nulo si no está definido
-            stock,
-            stockMin,
-            variantCategory: createdVariantCategoryId
-              ? { connect: { id: createdVariantCategoryId } }
-              : undefined,
-          })) || [],
+          variants?.map(
+            ({ name, description, price, imageUrl, stock, stockMin }) => ({
+              name,
+              description: description || null, // Asegurarse de que sea nulo si no está definido
+              price,
+              imageUrl,
+              stock,
+              stockMin,
+              variantCategory: createdVariantCategoryId
+                ? { connect: { id: createdVariantCategoryId } }
+                : undefined,
+            }),
+          ) || [],
       },
     };
 
@@ -156,8 +158,13 @@ export class ProductService implements IProductService {
     id: number,
     updateProductDto: UpdateProductDto,
   ): Promise<Product> {
-    const { name, price, imageUrl, description, categoryId, subCategoryId } =
-      updateProductDto;
+    const {
+      name,
+      defaultVariantImageUrl,
+      description,
+      categoryId,
+      subCategoryId,
+    } = updateProductDto;
 
     // Verificar si el producto existe.
     const existingProduct = await this.#products.findUnique({ where: { id } });
@@ -197,8 +204,7 @@ export class ProductService implements IProductService {
       where: { id },
       data: {
         name,
-        price,
-        imageUrl,
+        defaultVariantImageUrl,
         description,
         ...(categoryId && {
           category: {

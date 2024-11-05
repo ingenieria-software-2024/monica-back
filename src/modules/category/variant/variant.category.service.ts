@@ -119,7 +119,9 @@ export class VariantCategoryService implements IVariantCategoryService {
           productVariant: {
             id: productVariant.id,
             name: productVariant.name,
-            description: productVariant.description,
+            description: productVariant?.description,
+            price: productVariant.price,
+            imageUrl: productVariant?.imageUrl,
             stock: productVariant.stock,
             stockMin: productVariant.stockMin,
             productId: productVariant.productId,

@@ -35,9 +35,11 @@ export class ProductVariantService implements IProductVariantService {
     return await this.#variants.create({
       data: {
         name: createVariantDto.name,
+        description: createVariantDto?.description ?? Prisma.skip,
+        price: createVariantDto.price,
+        imageUrl: createVariantDto?.imageUrl ?? Prisma.skip,
         stock: createVariantDto.stock,
         stockMin: createVariantDto.stockMin,
-        description: createVariantDto.description,
         product: {
           connect: {
             id: createVariantDto.productId, // Usar productId del DTO
@@ -125,6 +127,8 @@ export class ProductVariantService implements IProductVariantService {
     const data: Prisma.ProductVariantUpdateInput = {
       name: updateVariantDto?.name ?? Prisma.skip,
       description: updateVariantDto?.description ?? Prisma.skip,
+      price: updateVariantDto?.price ?? Prisma.skip,
+      imageUrl: updateVariantDto?.imageUrl ?? Prisma.skip,
       stock: updateVariantDto?.stock ?? Prisma.skip,
       stockMin: updateVariantDto?.stockMin ?? Prisma.skip,
     };

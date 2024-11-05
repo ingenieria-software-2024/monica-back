@@ -11,7 +11,7 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { ProductService } from './product.service';
-import { CreateProductDto } from './dto/create.product.dto';
+import { CreateProductDto } from './dto/create.producto.dto';
 import { IProductService } from './product.interface';
 import { UpdateProductDto } from './dto/update.producto.dto';
 

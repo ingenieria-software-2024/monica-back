@@ -42,6 +42,8 @@ describe('Variantes de Producto y Productos', () => {
     it('las variantes deben ser guardadas correctamente para el producto "Camiseta"', async () => {
       const createVariantDto: CreateVariantDto = {
         name: ' Rojo ',
+        price: 500,
+        imageUrl: 'https://example.com/image.jpg',
         stock: 10,
         stockMin: 5,
         description: 'Camiseta roja ',
@@ -68,6 +70,8 @@ describe('Variantes de Producto y Productos', () => {
       expect(prismaService.productVariant.create).toHaveBeenCalledWith({
         data: {
           name: createVariantDto.name,
+          price: createVariantDto.price,
+          imageUrl: createVariantDto?.imageUrl,
           stock: createVariantDto.stock,
           stockMin: createVariantDto.stockMin,
           description: createVariantDto.description,
@@ -83,6 +87,8 @@ describe('Variantes de Producto y Productos', () => {
     it('debe lanzar un error si el producto no existe', async () => {
       const createVariantDto: CreateVariantDto = {
         name: 'Camiseta - Rojo - M',
+        price: 500,
+        imageUrl: 'https://example.com/image.jpg',
         stock: 10,
         stockMin: 5,
         description: 'Camiseta roja tamaño M',
@@ -107,6 +113,8 @@ describe('Variantes de Producto y Productos', () => {
       const updateVariantDto: UpdateVariantDto = {
         name: 'Camiseta Roja',
         description: 'Camiseta roja tamaño M',
+        price: 300,
+        imageUrl: 'https://example.com/image_new.jpg',
         stock: 5,
         stockMin: 3,
       };
@@ -117,6 +125,8 @@ describe('Variantes de Producto y Productos', () => {
       prismaService.productVariant.findUnique = jest.fn().mockResolvedValue({
         id: variantId,
         name: 'Camiseta - L',
+        price: 500,
+        imageUrl: 'https://example.com/image.jpg',
         productId: 1,
         variantCategoryId: 2,
         stock: 10,
@@ -127,6 +137,8 @@ describe('Variantes de Producto y Productos', () => {
       prismaService.productVariant.update = jest.fn().mockResolvedValue({
         id: variantId,
         name: 'Camiseta - L',
+        price: 300,
+        imageUrl: 'https://example.com/image_new.jpg',
         productId: 1,
         variantCategoryId: 2,
         stock: 5,
@@ -143,6 +155,12 @@ describe('Variantes de Producto y Productos', () => {
         where: { id: variantId },
         data: {
           ...(updateVariantDto.name && { name: updateVariantDto.name }),
+          ...(updateVariantDto.price !== undefined && {
+            price: updateVariantDto.price,
+          }),
+          ...(updateVariantDto.imageUrl && {
+            imageUrl: updateVariantDto.imageUrl,
+          }),
           ...(updateVariantDto.description && {
             description: updateVariantDto.description,
           }),

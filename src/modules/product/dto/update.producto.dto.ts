@@ -1,12 +1,10 @@
 import {
   IsString,
-  IsNumber,
   IsInt,
   Length,
   IsOptional,
   IsNotEmpty,
   IsDefined,
-  Min,
   IsBoolean,
 } from 'class-validator';
 
@@ -28,17 +26,11 @@ export class UpdateProductDto {
   /** Una descripción asociada a este producto. */
   description?: string;
 
-  @IsNumber()
-  @IsDefined()
-  @Min(0)
-  /** El precio del producto a crear. */
-  price: number;
-
   @IsString()
   @IsDefined()
   @IsNotEmpty()
   /** La URL a una imágen representativa del producto. */
-  imageUrl: string;
+  defaultVariantImageUrl: string;
 
   @IsInt()
   @IsDefined()
