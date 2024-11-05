@@ -3,7 +3,9 @@ import {
   Controller,
   Delete,
   Get,
+  Inject,
   Param,
+  ParseIntPipe,
   Post,
   Put,
   Session,
@@ -11,36 +13,40 @@ import {
 import { CartService } from './cart.service';
 import { AddItemDto } from './dto/add-item.dto';
 import { UpdateQuantityDto } from './dto/update-quantity.dto';
+import { ICartService } from './cart.interface';
 
-@Controller('cart')
+@Controller('/cart')
 export class CartController {
-  constructor(private readonly cartService: CartService) {}
+  constructor(@Inject(CartService) private readonly service: ICartService) {}
 
   @Get()
-  getCart(@Session() session) {
-    return this.cartService.getCart(session.userId); // Cambia 'session' por 'session.userId' si está definido
+  async getCart(@Session() session) {
+    return this.service.getCart(session.userId);
   }
 
-  @Post('add')
-  addToCart(@Body() addItemDto: AddItemDto, @Session() session) {
-    return this.cartService.addToCart(session.userId, addItemDto); // Cambia 'session' por 'session.userId' si está definido
+  @Post()
+  async addToCart(@Body() addItemDto: AddItemDto, @Session() session) {
+    return this.service.addToCart(session.userId, addItemDto);
   }
 
-  @Put('update-quantity')
-  updateQuantity(
+  @Put()
+  async updateQuantity(
     @Body() updateQuantityDto: UpdateQuantityDto,
     @Session() session,
   ) {
-    return this.cartService.updateQuantity(session.userId, updateQuantityDto); // Asegúrate de que el método esté en el servicio
+    return this.service.updateQuantity(session.userId, updateQuantityDto);
   }
 
-  @Delete('remove/:productId')
-  removeFromCart(@Param('productId') productId: string, @Session() session) {
-    return this.cartService.removeProduct(session.userId, Number(productId)); // Convierte productId a número
+  @Delete()
+  async clear(@Session() session) {
+    return this.service.clearCart(session.userId);
   }
 
-  @Post('checkout')
-  checkout(@Session() session) {
-    return this.cartService.clearCart(session.userId); // Asegúrate de que el método esté en el servicio
+  @Delete('/:productId')
+  async removeFromCart(
+    @Param('productId', ParseIntPipe) productId: number,
+    @Session() session,
+  ) {
+    return this.service.removeProduct(session.userId, productId);
   }
 }
