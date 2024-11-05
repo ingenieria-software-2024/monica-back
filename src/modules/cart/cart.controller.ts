@@ -36,11 +36,11 @@ export class CartController {
 
   @Delete('remove/:productId')
   removeFromCart(@Param('productId') productId: string, @Session() session) {
-    return this.cartService.removeFromCart(session.userId, Number(productId)); // Convierte productId a número
+    return this.cartService.removeProduct(session.userId, Number(productId)); // Convierte productId a número
   }
 
   @Post('checkout')
   checkout(@Session() session) {
-    return this.cartService.checkout(session.userId); // Asegúrate de que el método esté en el servicio
+    return this.cartService.clearCart(session.userId); // Asegúrate de que el método esté en el servicio
   }
 }
