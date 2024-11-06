@@ -8,7 +8,8 @@ import { UsersModule } from '../users/users.module';
   imports: [
     JwtModule.registerAsync({
       imports: [ConfigModule],
-      useFactory: (config: ConfigService) => ({
+      inject: [ConfigService],
+      useFactory: async (config: ConfigService) => ({
         secret: config.get<string>('AUTHENTICATION_SECRET') ?? 'default_secret',
         signOptions: {
           expiresIn: '24h',
