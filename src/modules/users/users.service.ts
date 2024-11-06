@@ -2,18 +2,40 @@ import { ConflictException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/providers/prisma.service';
 import { Prisma, User } from '@prisma/client';
 import { IUsersService } from './users.interface';
-import { genSalt, hash } from 'bcrypt';
+import { genSalt, hash, compare } from 'bcrypt';
 
 @Injectable()
 export class UsersService implements IUsersService {
-  constructor(private prisma: PrismaService) {}
+  /** Accesor CRUD para la entidad de usuarios. */
+  readonly #users: Prisma.UserDelegate;
+
+  constructor(private prisma: PrismaService) {
+    this.#users = prisma.user;
+  }
+
+  async verifyPassword(
+    password: string,
+    hashedPassword: string,
+  ): Promise<boolean> {
+    // Comparar las contraseñas.
+    return await compare(password, hashedPassword);
+  }
 
   async getAllUsers(): Promise<User[]> {
-    return this.prisma.user.findMany();
+    return this.#users.findMany();
+  }
+
+  async getUserByUsernameOrEmail(identificator: string): Promise<User> {
+    return this.#users.findUnique({
+      where: {
+        id: undefined,
+        OR: [{ email: identificator }, { username: identificator }],
+      },
+    });
   }
 
   async getUserById(id: number): Promise<User> {
-    return this.prisma.user.findUnique({ where: { id } });
+    return this.#users.findUnique({ where: { id } });
   }
 
   async createUser(data: Prisma.UserCreateInput): Promise<User> {
@@ -24,7 +46,7 @@ export class UsersService implements IUsersService {
     const password = await hash(data.password, salt);
 
     //Verificar que el email sea único
-    const existingUser = await this.prisma.user.findUnique({
+    const existingUser = await this.#users.findUnique({
       where: { email: data.email },
     });
 
@@ -33,6 +55,6 @@ export class UsersService implements IUsersService {
       throw new ConflictException('El email ya está registrado.');
     }
 
-    return this.prisma.user.create({ data: { ...data, password } });
+    return this.#users.create({ data: { ...data, password } });
   }
 }
