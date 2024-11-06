@@ -1,4 +1,8 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from 'src/providers/prisma.service';
 import { Prisma, User } from '@prisma/client';
 import { IUsersService } from './users.interface';
@@ -26,12 +30,26 @@ export class UsersService implements IUsersService {
   }
 
   async getUserByUsernameOrEmail(identificator: string): Promise<User> {
-    return this.#users.findUnique({
+    const byUsername = await this.#users.findUnique({
       where: {
-        id: undefined,
-        OR: [{ email: identificator }, { username: identificator }],
+        username: identificator,
       },
     });
+
+    if (!byUsername) {
+      const byEmail = await this.#users.findUnique({
+        where: {
+          email: identificator,
+        },
+      });
+
+      if (!byEmail)
+        throw new NotFoundException(`Usuario ${identificator} no encontrado.`);
+
+      return byEmail;
+    }
+
+    return byUsername;
   }
 
   async getUserById(id: number): Promise<User> {
