@@ -26,6 +26,8 @@ model ProductVariant {
   id                Int                @id @default(autoincrement())
   name              String
   description       String?
+  price             Float
+  imageUrl          String?
   stock             Int
   stockMin          Int
   productId         Int
@@ -33,6 +35,7 @@ model ProductVariant {
   product           Product            @relation(fields: [productId], references: [id])
   variantCategory   VariantCategory    @relation(fields: [variantCategoryId], references: [id])
   HistoricStockLog  HistoricStockLog[]
+  CartItem          CartItem[]
 }
 
 model HistoricStockLog {
@@ -63,18 +66,17 @@ model SubCategory {
 }
 
 model Product {
-  id                Int               @id @default(autoincrement())
-  name              String
-  description       String?
-  price             Float
-  imageUrl          String
-  categoryId        Int?
-  category          Category?         @relation(fields: [categoryId], references: [id])
-  subCategoryId     Int?
-  subCategory       SubCategory?      @relation(fields: [subCategoryId], references: [id])
-  variantCategories VariantCategory[] @relation("ProductVariantCategories")
-  ProductVariant    ProductVariant[]
-  HistoricProduct   HistoricProduct[]
+  id                     Int               @id @default(autoincrement())
+  name                   String
+  description            String?
+  defaultVariantImageUrl String
+  categoryId             Int?
+  category               Category?         @relation(fields: [categoryId], references: [id])
+  subCategoryId          Int?
+  subCategory            SubCategory?      @relation(fields: [subCategoryId], references: [id])
+  variantCategories      VariantCategory[] @relation("ProductVariantCategories")
+  ProductVariant         ProductVariant[]
+  HistoricProduct        HistoricProduct[]
 }
 
 // Esta entidad sirve como auditora para los productos creados y sus modificaciones de precio en algún momento dado.
@@ -88,8 +90,19 @@ model HistoricProduct {
 }
 
 model User {
-  id       Int    @id @default(autoincrement())
-  username String @unique
-  email    String @unique
-  password String
+  id        Int        @id @default(autoincrement())
+  username  String     @unique
+  email     String     @unique
+  password  String
+  cartItems CartItem[]
+}
+
+model CartItem {
+  id               Int            @id @default(autoincrement())
+  quantity         Int
+  totalPrice       Float
+  userId           Int
+  productVariantId Int
+  user             User           @relation(fields: [userId], references: [id])
+  productVariant   ProductVariant @relation(fields: [productVariantId], references: [id])
 }
