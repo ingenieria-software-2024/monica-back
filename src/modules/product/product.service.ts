@@ -38,7 +38,6 @@ export class ProductService implements IProductService {
     this.#products = prisma.product;
   }
 
-  //Creación de UN producto
   async createProduct(createProductDto: CreateProductDto): Promise<Product> {
     const {
       name,
@@ -131,7 +130,7 @@ export class ProductService implements IProductService {
       );
     }
   }
-  //Obtención de TODOS los productos registrados
+
   async getProducts(): Promise<Array<Product>> {
     return await this.#products.findMany({
       where: { isDeleted: false }, // Filtrar los productos que no han sido eliminados lógicamente
@@ -140,7 +139,7 @@ export class ProductService implements IProductService {
       },
     });
   }
-  //Obtención de UN producto por su ID
+
   async getProductById(id: number): Promise<Product> {
     const product = await this.#products.findUnique({
       where: { id, isDeleted: false }, // Filtrar los productos que no han sido eliminados lógicamente
@@ -155,7 +154,6 @@ export class ProductService implements IProductService {
     return product;
   }
 
-  //Actualización de UN producto por su ID
   async updateProductById(
     id: number,
     updateProductDto: UpdateProductDto,
@@ -226,7 +224,7 @@ export class ProductService implements IProductService {
       },
     });
   }
-  //Borrado lógico de UN producto por su ID
+
   async deleteProduct(id: number): Promise<Product> {
     const existingProduct = await this.#products.findUnique({
       where: { id, isDeleted: false }, // Filtro de eliminados con lógica
