@@ -1,9 +1,7 @@
-import { Injectable, Logger, NotFoundException, Inject } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/providers/prisma.service';
 import { ICategoryService } from './category.interface';
 import { Category, Prisma } from '@prisma/client';
-import { SubCategoryService } from './subcategory.service';
-import { ISubCategoryService } from './subcategory.interface';
 
 @Injectable()
 export class CategoryService implements ICategoryService {
@@ -12,13 +10,14 @@ export class CategoryService implements ICategoryService {
   //Accesor para las operaciones CRUD de las categorias.
   readonly #categories: Prisma.CategoryDelegate;
 
-  constructor(
-    private readonly prisma: PrismaService,
-    @Inject(SubCategoryService)
-    private readonly subCategories: ISubCategoryService,
-  ) {
+  /** Accesor para las operaciones CRUD de las subcategorias. */
+  readonly #subCategories: Prisma.SubCategoryDelegate;
+
+  constructor(private readonly prisma: PrismaService) {
     this.#categories = prisma.category;
+    this.#subCategories = prisma.subCategory;
   }
+
   async createCategory(name: string, description?: string): Promise<Category> {
     try {
       const category: Prisma.CategoryCreateInput = {
@@ -95,20 +94,28 @@ export class CategoryService implements ICategoryService {
       // Verificar si la categoría existe
       const category = await this.getCategoryById(id);
 
-      if (!category) {
+      if (!category)
         throw new NotFoundException(
           `No se encontró la categoría con ID: ${id}`,
         );
-      }
+
       // Obtener todas las subcategorías de esta categoría
-      const subCategories =
-        await this.subCategories.getSubCategoriesByParent(id);
+      const subCategories = await this.#subCategories.findMany({
+        where: {
+          categoryId: id,
+          isDeleted: false,
+        },
+      });
+
       // Eliminar lógicamente todas las subcategorías
       if (subCategories && subCategories.length > 0) {
-        for (const subCategory of subCategories) {
-          await this.subCategories.deleteSubCategory(subCategory.id);
-        }
+        for (const subCategory of subCategories)
+          await this.#subCategories.update({
+            where: { id: subCategory.id },
+            data: { isDeleted: true },
+          });
       }
+
       // Realizar el borrado lógico de la categoría
       return await this.#categories.update({
         where: { id, isDeleted: false },

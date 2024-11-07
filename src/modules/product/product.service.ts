@@ -18,6 +18,7 @@ import { VariantCategoryService } from '../category/variant/variant.category.ser
 import { IVariantCategoryService } from '../category/variant/variant.category.interface';
 import { ProductVariantService } from './variants/product.variants.service';
 import { IProductVariantService } from './variants/product.variants.interface';
+import { SubCategoryService } from '../category/subcategory.service';
 
 @Injectable()
 export class ProductService implements IProductService {
@@ -31,6 +32,7 @@ export class ProductService implements IProductService {
     @Inject(VariantCategoryService)
     private readonly variantCategoryService: IVariantCategoryService,
     @Inject(CategoryService) private readonly categories: ICategoryService,
+    @Inject(SubCategoryService)
     private readonly subCategories: ISubCategoryService,
     @Inject(ProductVariantService)
     private readonly productVariants: IProductVariantService,

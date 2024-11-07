@@ -73,8 +73,6 @@ model Product {
   name String
   description String?
   defaultVariantImageUrl String
-  price Float
-  imageUrl String
   categories Category[]
   subCategories SubCategory[]
   variantCategories VariantCategory[] @relation("ProductVariantCategories") 
