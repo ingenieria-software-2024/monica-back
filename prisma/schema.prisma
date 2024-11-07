@@ -46,8 +46,9 @@ model SubCategory {
   id Int @id @default(autoincrement())
   name String
   description String?
-  category Category @relation(fields: [id], references: [id])
-  Product Product[]
+  categoryId Int
+  category Category @relation(fields: [categoryId], references: [id])
+  Products Product[]
   isDeleted Boolean @default(false)
 }
 
@@ -57,10 +58,8 @@ model Product {
   description String?
   price Float
   imageUrl String
-  categoryId Int?
-  category Category? @relation(fields: [categoryId], references: [id])
-  subCategoryId Int?
-  subCategory SubCategory? @relation(fields: [subCategoryId], references: [id])
+  categories Category[]
+  subCategories SubCategory[]
   variantCategories VariantCategory[] @relation("ProductVariantCategories") 
   ProductVariant ProductVariant[]
   HistoricProduct HistoricProduct[]
