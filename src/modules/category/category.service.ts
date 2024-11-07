@@ -91,7 +91,7 @@ export class CategoryService implements ICategoryService {
     }
   }
   //Borrado lógico de UNA categoría
-  async DeleteCategory(id: number): Promise<Category> {
+  async deleteCategory(id: number): Promise<Category> {
     try {
       // Verificar si la categoría existe
       const category = await this.getCategoryById(id);
@@ -107,7 +107,7 @@ export class CategoryService implements ICategoryService {
       // Eliminar lógicamente todas las subcategorías
       if (subCategories && subCategories.length > 0) {
         for (const subCategory of subCategories) {
-          await this.subCategories.DeleteSubCategory(subCategory.id);
+          await this.subCategories.deleteSubCategory(subCategory.id);
         }
       }
       // Realizar el borrado lógico de la categoría

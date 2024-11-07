@@ -79,9 +79,9 @@ export class CategoryController {
   }
 
   @Delete('/:id')
-  async DeleteCategory(
+  async deleteCategory(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<Category> {
-    return this.category.DeleteCategory(id);
+    return this.category.deleteCategory(id);
   }
 }

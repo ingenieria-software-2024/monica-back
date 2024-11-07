@@ -44,5 +44,5 @@ export interface ICategoryService {
    *
    * @returns {Promise<Category>}
    */
-  DeleteCategory(id: number): Promise<Category>;
+  deleteCategory(id: number): Promise<Category>;
 }

@@ -81,7 +81,7 @@ export class SubCategoryService implements ISubCategoryService {
     return subCategories;
   }
   //Borrado lógico de UNA subcategoría
-  async DeleteSubCategory(id: number): Promise<SubCategory> {
+  async deleteSubCategory(id: number): Promise<SubCategory> {
     const subCategory = await this.getSubCategoryById(id);
 
     if (!subCategory) {
