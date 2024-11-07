@@ -9,7 +9,7 @@ import { ISubCategoryService } from './subcategory.interface';
 export class CategoryService implements ICategoryService {
   readonly #logger = new Logger(CategoryService.name);
 
-  /** Accesor para las operaciones CRUD de las categorias. */
+  //Accesor para las operaciones CRUD de las categorias.
   readonly #categories: Prisma.CategoryDelegate;
 
   constructor(
@@ -19,7 +19,7 @@ export class CategoryService implements ICategoryService {
   ) {
     this.#categories = prisma.category;
   }
-
+  //Creación de UNA categoría
   async createCategory(name: string, description?: string): Promise<Category> {
     try {
       const category: Prisma.CategoryCreateInput = {
@@ -33,7 +33,7 @@ export class CategoryService implements ICategoryService {
       throw error;
     }
   }
-
+  //Obtención de TODAS las categorías
   async getCategories(): Promise<Array<Category>> {
     try {
       return await this.#categories.findMany({
@@ -44,7 +44,7 @@ export class CategoryService implements ICategoryService {
       throw e;
     }
   }
-
+  //Obtención de UNA categoría por su ID
   async getCategoryById(id: number): Promise<Category> {
     try {
       const category = await this.#categories.findUnique({ 
@@ -63,7 +63,7 @@ export class CategoryService implements ICategoryService {
       throw e;
     }
   }
-
+  //Actualización de UNA categoría
   async updateCategoryByid(id: number, data: Category) {
     try {
       const category = await this.getCategoryById(id);
@@ -84,7 +84,7 @@ export class CategoryService implements ICategoryService {
       throw e;
     }
   }
-
+  //Borrado lógico de UNA categoría
   async DeleteCategory(id: number): Promise<Category> {
     try {
       // Verificar si la categoría existe

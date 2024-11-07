@@ -18,7 +18,7 @@ export class SubCategoryService implements ISubCategoryService {
   ) {
     this.#subCategories = prisma.subCategory;
   }
-
+  //Creación de UNA subcategoría
   async createSubCategory(
     name: string,
     parent: number,
@@ -41,7 +41,7 @@ export class SubCategoryService implements ISubCategoryService {
     };
     return await this.#subCategories.create({ data: subCategory });
   }
-
+  //Obtención de TODAS las subcategorías
   async getSubCategories(): Promise<Array<SubCategory>> {
     const subCategories = await this.#subCategories.findMany({
       where: { isDeleted: false },
@@ -52,7 +52,7 @@ export class SubCategoryService implements ISubCategoryService {
     }
     return subCategories;
   }
-
+  //Obtención de UNA subcategoría por su ID
   async getSubCategoryById(id: number): Promise<SubCategory> {
     const subCategory = await this.#subCategories.findUnique({
       where: { id, isDeleted: false },
@@ -63,7 +63,7 @@ export class SubCategoryService implements ISubCategoryService {
     }
     return subCategory;
   }
-
+  //Obtención de TODAS las subcategorías por ID su de categoría
   async getSubCategoriesByParent(
     categoryId: number,
   ): Promise<Array<SubCategory>> {
@@ -76,7 +76,7 @@ export class SubCategoryService implements ISubCategoryService {
     }
     return subCategories;
   }
-
+  //Borrado lógico de UNA subcategoría
   async DeleteSubCategory(id: number): Promise<SubCategory> {
     const subCategory = await this.getSubCategoryById(id);
 
