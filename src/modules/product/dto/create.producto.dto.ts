@@ -4,14 +4,12 @@ import {
   IsDefined,
   IsNotEmpty,
   IsInt,
-  IsNumber,
   IsOptional,
   IsString,
-  Min,
   Length,
   ValidateNested,
 } from 'class-validator';
-import { UpdateVariantDto } from 'src/modules/stock/dto/update-variant.dto';
+import { UpdateVariantDto } from 'src/modules/product/variants/dto/update-variant.dto';
 import { CreateVariantCategoryDto } from 'src/modules/category/variant/dto/create.variant.category.dto';
 
 export class CreateProductDto {
@@ -30,15 +28,10 @@ export class CreateProductDto {
   })
   description?: string;
 
-  @IsNumber()
-  @IsDefined()
-  @Min(0)
-  price: number;
-
   @IsString()
   @IsDefined()
   @IsNotEmpty()
-  imageUrl: string;
+  defaultVariantImageUrl: string;
 
   @IsInt()
   @IsDefined()
@@ -54,7 +47,7 @@ export class CreateProductDto {
   @ValidateNested({ each: true })
   @Type(() => UpdateVariantDto)
   @IsOptional()
-  variants?: UpdateVariantDto[];
+  variants?: Array<UpdateVariantDto>;
 
   @ValidateNested({ each: true })
   @Type(() => CreateVariantCategoryDto)

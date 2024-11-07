@@ -1,30 +1,27 @@
 import { Prisma, ProductVariant } from '@prisma/client';
 import { CreateVariantDto } from './dto/create-variant.dto';
 import { UpdateVariantDto } from './dto/update-variant.dto';
-import { IStockService } from './stock.interface';
+import { IProductVariantService } from './product.variants.interface';
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
-import { PrismaService } from '../../providers/prisma.service';
+import { PrismaService } from '../../../providers/prisma.service';
 
 @Injectable()
-export class StockService implements IStockService {
-  readonly #logger = new Logger(StockService.name);
+export class ProductVariantService implements IProductVariantService {
+  readonly #logger = new Logger(ProductVariantService.name);
 
   /** Accesor para las operaciones CRUD de las variantes */
   readonly #variants: Prisma.ProductVariantDelegate;
+  readonly #products: Prisma.ProductDelegate;
 
   constructor(private readonly prisma: PrismaService) {
     this.#variants = prisma.productVariant;
+    this.#products = prisma.product;
   }
 
-  /**
-   * Crea una nueva variante
-   * @param {CreateVariantDto} createVariantDto
-   * @returns {Promise<ProductVariant>}
-   */
   async createVariant(
     createVariantDto: CreateVariantDto,
   ): Promise<ProductVariant> {
-    const productExists = await this.prisma.product.findUnique({
+    const productExists = await this.#products.findUnique({
       where: { id: createVariantDto.productId }, // Usar productId del DTO
     });
 
@@ -35,12 +32,14 @@ export class StockService implements IStockService {
     }
 
     // Asegúrate de que el DTO incluya variantCategoryId
-    return await this.prisma.productVariant.create({
+    return await this.#variants.create({
       data: {
         name: createVariantDto.name,
+        description: createVariantDto?.description ?? Prisma.skip,
+        price: createVariantDto.price,
+        imageUrl: createVariantDto?.imageUrl ?? Prisma.skip,
         stock: createVariantDto.stock,
         stockMin: createVariantDto.stockMin,
-        description: createVariantDto.description,
         product: {
           connect: {
             id: createVariantDto.productId, // Usar productId del DTO
@@ -56,12 +55,8 @@ export class StockService implements IStockService {
     });
   }
 
-  /**
-   * Obtener listado de todas las variantes
-   * @returns {Promise<ProductVariant[]>}
-   */
   async getAllVariants(): Promise<ProductVariant[]> {
-    return await this.prisma.productVariant.findMany({
+    return await this.#variants.findMany({
       include: {
         variantCategory: {
           // Incluir la categoría de variante
@@ -73,13 +68,8 @@ export class StockService implements IStockService {
     });
   }
 
-  /**
-   * Busca una variante por su identificador.
-   * @param {number} id
-   * @returns {Promise<ProductVariant>}
-   */
   async getVariantById(id: number): Promise<ProductVariant> {
-    const variant = await this.prisma.productVariant.findUnique({
+    const variant = await this.#variants.findUnique({
       where: { id },
       include: {
         variantCategory: {
@@ -97,46 +87,60 @@ export class StockService implements IStockService {
     return variant;
   }
 
-  /**
-   * Actualizar una variante registrada
-   * @param {number} id
-   * @param {UpdateVariantDto} updateVariantDto
-   * @returns {Promise<ProductVariant>}
-   */
-  async updateVariant(
-    id: number,
-    updateVariantDto: UpdateVariantDto,
-  ): Promise<ProductVariant> {
-    return this.prisma.productVariant.update({
-      where: { id },
-      data: {
-        ...(updateVariantDto.name && { name: updateVariantDto.name }),
-        ...(updateVariantDto.description && {
-          description: updateVariantDto.description,
-        }),
-        ...(updateVariantDto.stock !== undefined && {
-          stock: updateVariantDto.stock,
-        }),
-        ...(updateVariantDto.stockMin !== undefined && {
-          stockMin: updateVariantDto.stockMin,
-        }),
-        ...(updateVariantDto.productId && {
-          productId: updateVariantDto.productId,
-        }), // Agregar productId
-        ...(updateVariantDto.variantCategoryId && {
-          variantCategoryId: updateVariantDto.variantCategoryId, // Agregar variantCategoryId
-        }),
+  async getVariantsByProductId(
+    productId: number,
+  ): Promise<Array<ProductVariant>> {
+    return await this.#variants.findMany({
+      where: { productId },
+      include: {
+        product: {
+          select: {
+            id: true,
+            name: true,
+            description: true,
+          },
+        },
+        variantCategory: {
+          select: {
+            name: true,
+          },
+        },
       },
     });
   }
 
-  /**
-   * Borrar alguna variante existente
-   * @param {number} id
-   * @returns {Promise<ProductVariant>}
-   */
+  async updateVariant(
+    id: number,
+    updateVariantDto: UpdateVariantDto,
+  ): Promise<ProductVariant> {
+    // Existe la variante a actualizar?
+    const variant = await this.#variants.findUnique({
+      where: { id },
+    });
+
+    if (!variant)
+      throw new NotFoundException(
+        `La variante de producto con ID ${id} no existe.`,
+      );
+
+    // Parsear campos de DTO definidos.
+    const data: Prisma.ProductVariantUpdateInput = {
+      name: updateVariantDto?.name ?? Prisma.skip,
+      description: updateVariantDto?.description ?? Prisma.skip,
+      price: updateVariantDto?.price ?? Prisma.skip,
+      imageUrl: updateVariantDto?.imageUrl ?? Prisma.skip,
+      stock: updateVariantDto?.stock ?? Prisma.skip,
+      stockMin: updateVariantDto?.stockMin ?? Prisma.skip,
+    };
+
+    return this.#variants.update({
+      where: { id },
+      data,
+    });
+  }
+
   async deleteVariant(id: number): Promise<ProductVariant> {
-    return await this.prisma.productVariant.delete({
+    return await this.#variants.delete({
       where: { id },
     });
   }
