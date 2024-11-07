@@ -1,4 +1,4 @@
-import { Injectable, Logger, NotFoundException,Inject, InternalServerErrorException } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException, Inject } from '@nestjs/common';
 import { PrismaService } from 'src/providers/prisma.service';
 import { ICategoryService } from './category.interface';
 import { Category, Prisma } from '@prisma/client';
@@ -47,17 +47,21 @@ export class CategoryService implements ICategoryService {
   //Obtención de UNA categoría por su ID
   async getCategoryById(id: number): Promise<Category> {
     try {
-      const category = await this.#categories.findUnique({ 
-        where: { id, isDeleted: false } 
+      const category = await this.#categories.findUnique({
+        where: { id, isDeleted: false },
       });
-      
+
       if (!category) {
-        throw new NotFoundException(`No se encontró la categoría con ID: ${id}`);
+        throw new NotFoundException(
+          `No se encontró la categoría con ID: ${id}`,
+        );
       }
       return category;
     } catch (e) {
       if (e instanceof Prisma.PrismaClientKnownRequestError)
-        throw new NotFoundException(`No se encontró la categoría con ID: ${id}`);
+        throw new NotFoundException(
+          `No se encontró la categoría con ID: ${id}`,
+        );
 
       this.#logger.error(`Failed to search category by ID ${id}: ${e}`);
       throw e;
@@ -67,9 +71,11 @@ export class CategoryService implements ICategoryService {
   async updateCategoryByid(id: number, data: Category) {
     try {
       const category = await this.getCategoryById(id);
-      
+
       if (!category) {
-        throw new NotFoundException(`No se encontró la categoría con ID: ${id}`);
+        throw new NotFoundException(
+          `No se encontró la categoría con ID: ${id}`,
+        );
       }
 
       return await this.#categories.update({
@@ -89,12 +95,15 @@ export class CategoryService implements ICategoryService {
     try {
       // Verificar si la categoría existe
       const category = await this.getCategoryById(id);
-      
+
       if (!category) {
-        throw new NotFoundException(`No se encontró la categoría con ID: ${id}`);
+        throw new NotFoundException(
+          `No se encontró la categoría con ID: ${id}`,
+        );
       }
       // Obtener todas las subcategorías de esta categoría
-      const subCategories = await this.subCategories.getSubCategoriesByParent(id);
+      const subCategories =
+        await this.subCategories.getSubCategoriesByParent(id);
       // Eliminar lógicamente todas las subcategorías
       if (subCategories && subCategories.length > 0) {
         for (const subCategory of subCategories) {

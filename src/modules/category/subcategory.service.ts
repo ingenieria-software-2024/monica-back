@@ -59,7 +59,9 @@ export class SubCategoryService implements ISubCategoryService {
     });
 
     if (!subCategory) {
-      throw new NotFoundException(`No se encontró la subcategoría con ID: ${id}`);
+      throw new NotFoundException(
+        `No se encontró la subcategoría con ID: ${id}`,
+      );
     }
     return subCategory;
   }
@@ -72,7 +74,9 @@ export class SubCategoryService implements ISubCategoryService {
     });
 
     if (!subCategories.length) {
-      throw new NotFoundException(`No se encontraron subcategorías para la categoría con ID: ${categoryId}`);
+      throw new NotFoundException(
+        `No se encontraron subcategorías para la categoría con ID: ${categoryId}`,
+      );
     }
     return subCategories;
   }
@@ -81,7 +85,9 @@ export class SubCategoryService implements ISubCategoryService {
     const subCategory = await this.getSubCategoryById(id);
 
     if (!subCategory) {
-      throw new NotFoundException(`No se encontró la subcategoría con ID: ${id}`);
+      throw new NotFoundException(
+        `No se encontró la subcategoría con ID: ${id}`,
+      );
     }
     // Realizar un borrado lógico estableciendo un campo `isDeleted` a `true`
     return await this.#subCategories.update({
@@ -89,5 +95,4 @@ export class SubCategoryService implements ISubCategoryService {
       data: { isDeleted: true },
     });
   }
-
 }
