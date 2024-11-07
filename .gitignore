@@ -42,6 +42,14 @@ lerna-debug.log*
 .env.production.local
 .env.local
 
+# ESLint
+.eslintcache
+.eslintrc.js
+.eslintrc.json
+.eslintrc.yaml
+.eslintrc.yml
+.eslintrc
+
 # temp directory
 .temp
 .tmp
