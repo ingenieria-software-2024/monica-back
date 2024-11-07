@@ -13,7 +13,6 @@ import { CreateProductDto } from './dto/create.producto.dto';
 import { UpdateProductDto } from './dto/update.producto.dto';
 import { CategoryService } from '../category/category.service';
 import { ICategoryService } from '../category/category.interface';
-import { SubCategoryService } from '../category/subcategory.service';
 import { ISubCategoryService } from '../category/subcategory.interface';
 import { VariantCategoryService } from '../category/variant/variant.category.service';
 
@@ -21,20 +20,19 @@ import { VariantCategoryService } from '../category/variant/variant.category.ser
 export class ProductService implements IProductService {
   readonly #logger = new Logger(ProductService.name);
 
-  /** Accesor a las operaciones CRUD del producto en Prisma. */
+  //Accesor a las operaciones CRUD del producto en Prisma.
   readonly #products: Prisma.ProductDelegate;
 
   constructor(
     private readonly prisma: PrismaService,
     private readonly variantCategoryService: VariantCategoryService,
     @Inject(CategoryService) private readonly categories: ICategoryService,
-    @Inject(SubCategoryService)
     private readonly subCategories: ISubCategoryService,
   ) {
     this.#products = prisma.product;
   }
 
-  /** Metodo para crear un producto */
+  //Creación de UN producto
   async createProduct(createProductDto: CreateProductDto): Promise<Product> {
     const {
       name,
@@ -47,7 +45,7 @@ export class ProductService implements IProductService {
       variantCategory,
     } = createProductDto;
 
-    // Buscar la categoría o subcategoría primero.
+    // Búsqueda de la categoría o subcategoría primero.
     const category = isSubCategory
       ? await this.subCategories.getSubCategoryById(categoryId)
       : await this.categories.getCategoryById(categoryId);
@@ -58,7 +56,7 @@ export class ProductService implements IProductService {
       );
     }
 
-    // Validar y manejar la categoría de variante.
+    // Validación y manejo de la categoría de variante.
     let createdVariantCategoryId: number | undefined;
 
     if (variantCategory) {
@@ -78,7 +76,7 @@ export class ProductService implements IProductService {
       }
     }
 
-    // Validar las variantes, si existen.
+    // Validación de las variantes, si existen.
     if (variants && variants.length > 0) {
       for (const variant of variants) {
         if (
@@ -93,7 +91,7 @@ export class ProductService implements IProductService {
       }
     }
 
-    // Crear el producto con sus variantes.
+    //Creación de UN producto con sus variantes.
     const productData: Prisma.ProductCreateInput = {
       name,
       price,
@@ -125,8 +123,7 @@ export class ProductService implements IProductService {
       );
     }
   }
-
-  /**Metodo para obtener todos los productos registrados */
+  //Obtención de TODOS los productos registrados
   async getProducts(): Promise<Array<Product>> {
     return await this.#products.findMany({
       where: { isDeleted: false }, // Filtrar los productos que no han sido eliminados lógicamente
@@ -135,8 +132,7 @@ export class ProductService implements IProductService {
       },
     });
   }
-
-  /**Metodo para obtener un producto por su ID */
+  //Obtención de UN producto por su ID
   async getProductById(id: number): Promise<Product> {
     const product = await this.#products.findUnique({
       where: { id, isDeleted: false }, // Filtrar los productos que no han sido eliminados lógicamente
@@ -151,7 +147,7 @@ export class ProductService implements IProductService {
     return product;
   }
 
-  /** Metodo para actualizar un producto */
+  //Actualización de UN producto por su ID
   async updateProductById(
     id: number,
     updateProductDto: UpdateProductDto,
@@ -222,72 +218,15 @@ export class ProductService implements IProductService {
       },
     });
   }
-
+  //Borrado lógico de UN producto por su ID
   async deleteProduct(id: number): Promise<Product> {
     const existingProduct = await this.#products.findUnique({
-      where: { id, isDeleted: false }, // Filtro de eliminados con lógica
-      include: { // Incluir variantes de producto
-        ProductVariant: true,
-        category: true,
-        subCategory: true
-      },
+      where: { id, isDeleted: false } // Filtro de eliminados con lógica
     });
 
     if (!existingProduct) {
       throw new NotFoundException(`No se encontró el producto con ID: ${id}`);
     }
-
-    if (!existingProduct.ProductVariant) {
-      throw new NotFoundException(`No se encontraron variantes para el producto con ID: ${id}`);
-    }
-
-    if (!existingProduct.category) {
-      throw new NotFoundException(`No se encontró la categoría para el producto con ID: ${id}`);
-    }
-
-    if (!existingProduct.subCategory) {
-      throw new NotFoundException(`No se encontró la subcategoría para el producto con ID: ${id}`);
-    }
-
-    // Borrar variantes asociadas al producto
-    if (existingProduct.ProductVariant && existingProduct.ProductVariant.length > 0) {
-      for (const variant of existingProduct.ProductVariant) {
-        await this.variantCategoryService.deleteVariantCategory(variant.id);
-      }
-    }
-
-    // Verificar si es el último producto en su categoría
-    if (existingProduct.category) {
-      const productsInCategory = await this.#products.count({
-        where: {
-          categoryId: existingProduct.category.id,
-          isDeleted: false,
-          id: { not: id } // Excluir el producto actual
-        }
-      });
-
-      if (productsInCategory === 0) {
-        // Si es el último producto, eliminar la categoría
-        await this.categories.DeleteCategory(existingProduct.category.id);
-      }
-    }
-
-    // Verificar si es el último producto en su subcategoría
-    if (existingProduct.subCategory) {
-      const productsInSubCategory = await this.#products.count({
-        where: {
-          subCategoryId: existingProduct.subCategory.id,
-          isDeleted: false,
-          id: { not: id } // Excluir el producto actual
-        }
-      });
-
-      if (productsInSubCategory === 0) {
-        // Si es el último producto, eliminar la subcategoría
-        await this.subCategories.DeleteSubCategory(existingProduct.subCategory.id);
-      }
-    }
-
     // Realizar un borrado lógico del producto
     return await this.#products.update({
       where: { id },
