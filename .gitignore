@@ -44,11 +44,6 @@ lerna-debug.log*
 
 # ESLint
 .eslintcache
-.eslintrc.js
-.eslintrc.json
-.eslintrc.yaml
-.eslintrc.yml
-.eslintrc
 
 # temp directory
 .temp
