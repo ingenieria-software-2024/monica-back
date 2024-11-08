@@ -1,17 +1,6 @@
-import {
-  IsInt,
-  IsOptional,
-  IsString,
-  Min,
-  IsNotEmpty,
-  IsDefined,
-} from 'class-validator';
+import { IsInt, IsNumber, IsOptional, IsString, Min } from 'class-validator';
 
 export class UpdateVariantDto {
-  @IsInt()
-  @IsDefined()
-  id: number;
-
   @IsOptional()
   @IsString()
   name?: string;
@@ -19,6 +8,15 @@ export class UpdateVariantDto {
   @IsOptional()
   @IsString()
   description?: string;
+
+  @IsOptional()
+  @IsNumber()
+  @Min(1)
+  price?: number;
+
+  @IsOptional()
+  @IsString()
+  imageUrl?: string;
 
   @IsOptional()
   @IsInt()
@@ -29,12 +27,4 @@ export class UpdateVariantDto {
   @IsInt()
   @Min(0) // stockMin no puede ser negativo
   stockMin?: number;
-
-  @IsInt()
-  @IsNotEmpty()
-  productId: number;
-
-  @IsInt()
-  @IsNotEmpty()
-  variantCategoryId: number;
 }

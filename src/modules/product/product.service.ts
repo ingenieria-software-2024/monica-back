@@ -16,6 +16,9 @@ import { ISubCategoryService } from '../category/subcategory.interface';
 import { CreateProductDto } from './dto/create.producto.dto';
 import { UpdateProductDto } from './dto/update.producto.dto';
 import { VariantCategoryService } from '../category/variant/variant.category.service';
+import { IVariantCategoryService } from '../category/variant/variant.category.interface';
+import { ProductVariantService } from './variants/product.variants.service';
+import { IProductVariantService } from './variants/product.variants.interface';
 
 @Injectable()
 export class ProductService implements IProductService {
@@ -26,10 +29,13 @@ export class ProductService implements IProductService {
 
   constructor(
     private readonly prisma: PrismaService,
-    private readonly variantCategoryService: VariantCategoryService,
+    @Inject(VariantCategoryService)
+    private readonly variantCategoryService: IVariantCategoryService,
     @Inject(CategoryService) private readonly categories: ICategoryService,
     @Inject(SubCategoryService)
     private readonly subCategories: ISubCategoryService,
+    @Inject(ProductVariantService)
+    private readonly productVariants: IProductVariantService,
   ) {
     this.#products = prisma.product;
   }
@@ -38,8 +44,7 @@ export class ProductService implements IProductService {
   async createProduct(createProductDto: CreateProductDto): Promise<Product> {
     const {
       name,
-      price,
-      imageUrl,
+      defaultVariantImageUrl,
       categoryId,
       isSubCategory,
       description,
@@ -96,23 +101,26 @@ export class ProductService implements IProductService {
     // Crear el producto con sus variantes.
     const productData: Prisma.ProductCreateInput = {
       name,
-      price,
-      imageUrl,
+      defaultVariantImageUrl,
       description,
       [isSubCategory ? 'subCategory' : 'category']: {
         connect: { id: categoryId },
       },
       ProductVariant: {
         create:
-          variants?.map(({ name, description, stock, stockMin }) => ({
-            name,
-            description: description || null, // Asegurarse de que sea nulo si no está definido
-            stock,
-            stockMin,
-            variantCategory: createdVariantCategoryId
-              ? { connect: { id: createdVariantCategoryId } }
-              : undefined,
-          })) || [],
+          variants?.map(
+            ({ name, description, price, imageUrl, stock, stockMin }) => ({
+              name,
+              description: description || null, // Asegurarse de que sea nulo si no está definido
+              price,
+              imageUrl,
+              stock,
+              stockMin,
+              variantCategory: createdVariantCategoryId
+                ? { connect: { id: createdVariantCategoryId } }
+                : undefined,
+            }),
+          ) || [],
       },
     };
 
@@ -152,12 +160,10 @@ export class ProductService implements IProductService {
   ): Promise<Product> {
     const {
       name,
-      price,
-      imageUrl,
+      defaultVariantImageUrl,
       description,
       categoryId,
       subCategoryId,
-      variants,
     } = updateProductDto;
 
     // Verificar si el producto existe.
@@ -185,6 +191,9 @@ export class ProductService implements IProductService {
       }
     }
 
+    // Obtener las variantes del producto.
+    const variants = await this.productVariants.getVariantsByProductId(id);
+
     // Mapear los `UpdateVariantDto` a solo los IDs
     const variantIds = variants
       ? variants.map((variant) => ({ id: variant.id }))
@@ -195,8 +204,7 @@ export class ProductService implements IProductService {
       where: { id },
       data: {
         name,
-        price,
-        imageUrl,
+        defaultVariantImageUrl,
         description,
         ...(categoryId && {
           category: {

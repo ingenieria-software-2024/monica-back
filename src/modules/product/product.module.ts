@@ -4,9 +4,10 @@ import { PrismaService } from 'src/providers/prisma.service';
 import { CategoryModule } from '../category/category.module';
 import { VariantCategoryModule } from '../category/variant/variant.category.module';
 import { ProductController } from './product.controller';
+import { ProductVariantModule } from './variants/product.variants.module';
 
 @Module({
-  imports: [CategoryModule, VariantCategoryModule],
+  imports: [CategoryModule, VariantCategoryModule, ProductVariantModule],
   providers: [ProductService, PrismaService],
   exports: [ProductService],
   controllers: [ProductController],

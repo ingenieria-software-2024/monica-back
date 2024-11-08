@@ -5,7 +5,8 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["strictUndefinedChecks"]
 }
 
 datasource db {
@@ -14,68 +15,94 @@ datasource db {
 }
 
 model VariantCategory {
-  id Int @id @default(autoincrement())
-  name String
-  description String?
-  ProductVariant ProductVariant[] 
-  products Product[] @relation("ProductVariantCategories") 
+  id             Int              @id @default(autoincrement())
+  name           String
+  description    String?
+  ProductVariant ProductVariant[]
+  products       Product[]        @relation("ProductVariantCategories")
 }
 
 model ProductVariant {
-  id Int @id @default(autoincrement())
-  name String 
-  description String?
-  stock Int
-  stockMin Int
-  productId Int
+  id                Int                @id @default(autoincrement())
+  name              String
+  description       String?
+  price             Float
+  imageUrl          String?
+  stock             Int
+  stockMin          Int
+  productId         Int
   variantCategoryId Int // Referencia a la categoría de variante
-  product Product @relation(fields: [productId], references: [id])
-  variantCategory VariantCategory @relation(fields: [variantCategoryId], references: [id])
+  product           Product            @relation(fields: [productId], references: [id])
+  variantCategory   VariantCategory    @relation(fields: [variantCategoryId], references: [id])
+  HistoricStockLog  HistoricStockLog[]
+  CartItem          CartItem[]
+}
+
+model HistoricStockLog {
+  id               Int            @id @default(autoincrement())
+  productVariantId Int
+  productVariant   ProductVariant @relation(fields: [productVariantId], references: [id])
+  isIngress        Boolean
+  quantity         Int
+  createdAt        DateTime       @default(now())
+  createdBy        String?
+  reason           String?
 }
 
 model Category {
-  id Int @id @default(autoincrement())
-  name String
+  id          Int           @id @default(autoincrement())
+  name        String
   description String?
   SubCategory SubCategory[]
-  Product Product[]
+  Product     Product[]
 }
 
 model SubCategory {
-  id Int @id @default(autoincrement())
-  name String
+  id          Int       @id @default(autoincrement())
+  name        String
   description String?
-  category Category @relation(fields: [id], references: [id])
-  Product Product[]
+  category    Category  @relation(fields: [id], references: [id])
+  Product     Product[]
 }
 
 model Product {
-  id Int @id @default(autoincrement())
-  name String
-  description String?
-  price Float
-  imageUrl String
-  categoryId Int?
-  category Category? @relation(fields: [categoryId], references: [id])
-  subCategoryId Int?
-  subCategory SubCategory? @relation(fields: [subCategoryId], references: [id])
-  variantCategories VariantCategory[] @relation("ProductVariantCategories") 
-  ProductVariant ProductVariant[]
-  HistoricProduct HistoricProduct[]
+  id                     Int               @id @default(autoincrement())
+  name                   String
+  description            String?
+  defaultVariantImageUrl String
+  categoryId             Int?
+  category               Category?         @relation(fields: [categoryId], references: [id])
+  subCategoryId          Int?
+  subCategory            SubCategory?      @relation(fields: [subCategoryId], references: [id])
+  variantCategories      VariantCategory[] @relation("ProductVariantCategories")
+  ProductVariant         ProductVariant[]
+  HistoricProduct        HistoricProduct[]
 }
 
 // Esta entidad sirve como auditora para los productos creados y sus modificaciones de precio en algún momento dado.
 model HistoricProduct {
-  id Int @id @default(autoincrement())
-  productId Int
-  product Product @relation(fields: [productId], references: [id])
-  price Float
-  createdAt DateTime @default(now())
+  id         Int      @id @default(autoincrement())
+  productId  Int
+  product    Product  @relation(fields: [productId], references: [id])
+  price      Float
+  createdAt  DateTime @default(now())
   modifiedBy String?
 }
+
 model User {
-  id          Int           @id @default(autoincrement())
-  username    String        @unique
-  email       String        @unique
-  password    String
+  id        Int        @id @default(autoincrement())
+  username  String     @unique
+  email     String     @unique
+  password  String
+  cartItems CartItem[]
+}
+
+model CartItem {
+  id               Int            @id @default(autoincrement())
+  quantity         Int
+  totalPrice       Float
+  userId           Int
+  productVariantId Int
+  user             User           @relation(fields: [userId], references: [id])
+  productVariant   ProductVariant @relation(fields: [productVariantId], references: [id])
 }

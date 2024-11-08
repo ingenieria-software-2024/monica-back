@@ -1,17 +1,12 @@
-import { Type } from 'class-transformer';
 import {
   IsString,
-  IsNumber,
   IsInt,
   Length,
   IsOptional,
   IsNotEmpty,
   IsDefined,
-  Min,
   IsBoolean,
-  ValidateNested,
 } from 'class-validator';
-import { UpdateVariantDto } from 'src/modules/stock/dto/update-variant.dto';
 
 export class UpdateProductDto {
   @IsString()
@@ -31,17 +26,11 @@ export class UpdateProductDto {
   /** Una descripción asociada a este producto. */
   description?: string;
 
-  @IsNumber()
-  @IsDefined()
-  @Min(0)
-  /** El precio del producto a crear. */
-  price: number;
-
   @IsString()
   @IsDefined()
   @IsNotEmpty()
   /** La URL a una imágen representativa del producto. */
-  imageUrl: string;
+  defaultVariantImageUrl: string;
 
   @IsInt()
   @IsDefined()
@@ -55,10 +44,4 @@ export class UpdateProductDto {
   @IsDefined()
   /** Indicador de si el ID provisto pertenece a una sub-categoría y no a una categoría común y corriente. */
   subCategoryId?: number;
-
-  @ValidateNested({ each: true })
-  @Type(() => UpdateVariantDto)
-  @IsOptional()
-  /** Variantes asociadas al producto. */
-  variants?: UpdateVariantDto[];
 }

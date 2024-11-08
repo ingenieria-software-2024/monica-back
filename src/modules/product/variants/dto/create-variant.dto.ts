@@ -5,6 +5,8 @@ import {
   IsString,
   Min,
   MaxLength,
+  IsNumber,
+  IsDefined,
 } from 'class-validator';
 
 export class CreateVariantDto {
@@ -17,6 +19,20 @@ export class CreateVariantDto {
   @IsString()
   @MaxLength(255)
   description?: string;
+
+  @IsNumber()
+  @Min(1)
+  @IsNotEmpty()
+  @IsDefined()
+  /** El precio que tiene esta variante. */
+  price: number;
+
+  @IsString()
+  @IsDefined()
+  @IsNotEmpty()
+  @IsOptional()
+  /** Si es provista, una imágen representativa de esta variante de producto. */
+  imageUrl?: string;
 
   @IsInt()
   @Min(0) // Stock no puede ser negativo

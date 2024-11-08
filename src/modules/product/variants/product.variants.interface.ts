@@ -2,7 +2,7 @@ import { ProductVariant } from '@prisma/client';
 import { CreateVariantDto } from './dto/create-variant.dto';
 import { UpdateVariantDto } from './dto/update-variant.dto';
 
-export interface IStockService {
+export interface IProductVariantService {
   /**
    * Crea una nueva variante
    * @param {CreateVariantDto} createVariantDto
@@ -25,6 +25,15 @@ export interface IStockService {
    * @returns {Promise<ProductVariant>}
    */
   getVariantById(id: number): Promise<ProductVariant>;
+
+  /**
+   * Busca las variantes asociadas a un producto por su ID.
+   *
+   * @param {number} productId La ID del producto padre del cual buscar las variantes.
+   *
+   * @returns {Promise<Array<ProductVariant>>} El listado de variantes presentes en un producto, si las hay.
+   */
+  getVariantsByProductId(productId: number): Promise<Array<ProductVariant>>;
 
   /**
    * Actualizar una variante registrada
