@@ -55,28 +55,30 @@ model Category {
   description String?
   SubCategory SubCategory[]
   Product     Product[]
+  isDeleted Boolean @default(false)
 }
 
 model SubCategory {
   id          Int       @id @default(autoincrement())
   name        String
   description String?
-  category    Category  @relation(fields: [id], references: [id])
-  Product     Product[]
+  categoryId Int
+  category    Category  @relation(fields: [categoryId], references: [id])
+  Products     Product[]
+  isDeleted Boolean @default(false)
 }
 
 model Product {
-  id                     Int               @id @default(autoincrement())
-  name                   String
-  description            String?
+  id Int @id @default(autoincrement())
+  name String
+  description String?
   defaultVariantImageUrl String
-  categoryId             Int?
-  category               Category?         @relation(fields: [categoryId], references: [id])
-  subCategoryId          Int?
-  subCategory            SubCategory?      @relation(fields: [subCategoryId], references: [id])
-  variantCategories      VariantCategory[] @relation("ProductVariantCategories")
-  ProductVariant         ProductVariant[]
-  HistoricProduct        HistoricProduct[]
+  categories Category[]
+  subCategories SubCategory[]
+  variantCategories VariantCategory[] @relation("ProductVariantCategories") 
+  ProductVariant ProductVariant[]
+  HistoricProduct HistoricProduct[]
+  isDeleted Boolean @default(false)
 }
 
 // Esta entidad sirve como auditora para los productos creados y sus modificaciones de precio en algún momento dado.
