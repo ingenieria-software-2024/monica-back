@@ -3,7 +3,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { PrismaService } from 'src/providers/prisma.service';
+import { PrismaService } from '../../providers/prisma.service';
 import { Prisma, User } from '@prisma/client';
 import { IUsersService } from './users.interface';
 import { genSalt, hash, compare } from 'bcrypt';
