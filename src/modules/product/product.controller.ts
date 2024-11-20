@@ -9,6 +9,7 @@ import {
   Put,
   UsePipes,
   ValidationPipe,
+  Delete,
 } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { CreateProductDto } from './dto/create.producto.dto';
@@ -46,5 +47,10 @@ export class ProductController {
     @Body() updateProductDto: UpdateProductDto,
   ) {
     return this.product.updateProductById(id, updateProductDto);
+  }
+
+  @Delete('/:id')
+  async deleteProduct(@Param('id', ParseIntPipe) id: number) {
+    return this.product.deleteProduct(id);
   }
 }

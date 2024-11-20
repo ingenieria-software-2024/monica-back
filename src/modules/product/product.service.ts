@@ -6,25 +6,25 @@ import {
   Logger,
   NotFoundException,
 } from '@nestjs/common';
-import { IProductService } from './product.interface';
 import { Prisma, Product } from '@prisma/client';
 import { PrismaService } from 'src/providers/prisma.service';
-import { CategoryService } from '../category/category.service';
-import { ICategoryService } from '../category/category.interface';
-import { SubCategoryService } from '../category/subcategory.service';
-import { ISubCategoryService } from '../category/subcategory.interface';
+import { IProductService } from './product.interface';
 import { CreateProductDto } from './dto/create.producto.dto';
 import { UpdateProductDto } from './dto/update.producto.dto';
+import { CategoryService } from '../category/category.service';
+import { ICategoryService } from '../category/category.interface';
+import { ISubCategoryService } from '../category/subcategory.interface';
 import { VariantCategoryService } from '../category/variant/variant.category.service';
 import { IVariantCategoryService } from '../category/variant/variant.category.interface';
 import { ProductVariantService } from './variants/product.variants.service';
 import { IProductVariantService } from './variants/product.variants.interface';
+import { SubCategoryService } from '../category/subcategory.service';
 
 @Injectable()
 export class ProductService implements IProductService {
   readonly #logger = new Logger(ProductService.name);
 
-  /** Accesor a las operaciones CRUD del producto en Prisma. */
+  //Accesor a las operaciones CRUD del producto en Prisma.
   readonly #products: Prisma.ProductDelegate;
 
   constructor(
@@ -40,7 +40,6 @@ export class ProductService implements IProductService {
     this.#products = prisma.product;
   }
 
-  /** Metodo para crear un producto */
   async createProduct(createProductDto: CreateProductDto): Promise<Product> {
     const {
       name,
@@ -52,7 +51,7 @@ export class ProductService implements IProductService {
       variantCategory,
     } = createProductDto;
 
-    // Buscar la categoría o subcategoría primero.
+    // Búsqueda de la categoría o subcategoría primero.
     const category = isSubCategory
       ? await this.subCategories.getSubCategoryById(categoryId)
       : await this.categories.getCategoryById(categoryId);
@@ -63,7 +62,7 @@ export class ProductService implements IProductService {
       );
     }
 
-    // Validar y manejar la categoría de variante.
+    // Validación y manejo de la categoría de variante.
     let createdVariantCategoryId: number | undefined;
 
     if (variantCategory) {
@@ -83,7 +82,7 @@ export class ProductService implements IProductService {
       }
     }
 
-    // Validar las variantes, si existen.
+    // Validación de las variantes, si existen.
     if (variants && variants.length > 0) {
       for (const variant of variants) {
         if (
@@ -98,7 +97,7 @@ export class ProductService implements IProductService {
       }
     }
 
-    // Crear el producto con sus variantes.
+    //Creación de UN producto con sus variantes.
     const productData: Prisma.ProductCreateInput = {
       name,
       defaultVariantImageUrl,
@@ -134,26 +133,29 @@ export class ProductService implements IProductService {
     }
   }
 
-  /**Metodo para obtener todos los productos registrados */
   async getProducts(): Promise<Array<Product>> {
     return await this.#products.findMany({
+      where: { isDeleted: false }, // Filtrar los productos que no han sido eliminados lógicamente
       include: {
         ProductVariant: true, // Incluir las variantes de producto
       },
     });
   }
 
-  /**Metodo para obtener un producto por su ID */
   async getProductById(id: number): Promise<Product> {
-    return await this.#products.findUnique({
-      where: { id },
+    const product = await this.#products.findUnique({
+      where: { id, isDeleted: false }, // Filtrar los productos que no han sido eliminados lógicamente
       include: {
         ProductVariant: true, // Incluir las variantes de producto
       },
     });
+
+    if (!product) {
+      throw new NotFoundException(`No se encontró el producto con ID: ${id}`);
+    }
+    return product;
   }
 
-  /** Metodo para actualizar un producto */
   async updateProductById(
     id: number,
     updateProductDto: UpdateProductDto,
@@ -222,6 +224,21 @@ export class ProductService implements IProductService {
           },
         }),
       },
+    });
+  }
+
+  async deleteProduct(id: number): Promise<Product> {
+    const existingProduct = await this.#products.findUnique({
+      where: { id, isDeleted: false }, // Filtro de eliminados con lógica
+    });
+
+    if (!existingProduct) {
+      throw new NotFoundException(`No se encontró el producto con ID: ${id}`);
+    }
+    // Realizar un borrado lógico del producto
+    return await this.#products.update({
+      where: { id },
+      data: { isDeleted: true }, // Realizar un borrado lógico del producto
     });
   }
 }

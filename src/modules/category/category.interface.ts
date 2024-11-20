@@ -36,4 +36,13 @@ export interface ICategoryService {
    * @returns {Promise<Category>}
    */
   updateCategoryByid(id: number, data: Category): Promise<Category>;
+
+  /**
+   * Realiza un borrado lógico de una categoría y todas sus subcategorías.
+   *
+   * @param {number} id El identificador de la categoría.
+   *
+   * @returns {Promise<Category>}
+   */
+  deleteCategory(id: number): Promise<Category>;
 }

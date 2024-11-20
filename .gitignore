@@ -42,6 +42,9 @@ lerna-debug.log*
 .env.production.local
 .env.local
 
+# ESLint
+.eslintcache
+
 # temp directory
 .temp
 .tmp
