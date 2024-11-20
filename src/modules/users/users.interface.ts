@@ -2,11 +2,30 @@ import { Prisma, User } from '@prisma/client';
 
 export interface IUsersService {
   /**
+   * Utiliza una contraseña en texto plano y la compara con una contraseña hasheada.
+   *
+   * @param {string} password Contraseña en texto plano.
+   * @param {string} hashedPassword Contraseña hasheada.
+   *
+   * @returns {boolean} `true` si la contraseña es correcta, `false` en caso contrario.
+   */
+  verifyPassword(password: string, hashedPassword: string): Promise<boolean>;
+
+  /**
    * Devuelve un listado con todos los usuarios
    *
    * @returns {Promise<Array<User>>} Un listado con todos los usuarios registrados.
    */
   getAllUsers(): Promise<Array<User>>;
+
+  /**
+   * Busca a un usuario en base a su correo electronico o nombre de usuario.
+   *
+   * @param {string} identificator Correo electronico o nombre de usuario del usuario a buscar.
+   *
+   * @returns {Promise<User>} El usuario encontrado.
+   */
+  getUserByUsernameOrEmail(identificator: string): Promise<User>;
 
   /**
    * Devuelve un usuario por su id
