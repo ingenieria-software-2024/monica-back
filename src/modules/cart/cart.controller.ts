@@ -9,13 +9,16 @@ import {
   Post,
   Put,
   Session,
+  UseGuards,
 } from '@nestjs/common';
 import { CartService } from './cart.service';
 import { AddItemDto } from './dto/add-item.dto';
 import { UpdateQuantityDto } from './dto/update-quantity.dto';
 import { ICartService } from './cart.interface';
+import { AuthGuard } from 'src/pipes/auth/auth.guard';
 
 @Controller('/cart')
+@UseGuards(AuthGuard)
 export class CartController {
   constructor(@Inject(CartService) private readonly service: ICartService) {}
 

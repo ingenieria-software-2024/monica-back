@@ -3,12 +3,14 @@ import {
   Controller,
   Inject,
   Post,
+  UseGuards,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
 import { IAuthService } from './auth.interface';
 import { AuthService } from './auth.service';
 import { AuthLoginDto } from './dto/auth.login.dto';
+import { AuthGuard } from 'src/pipes/auth/auth.guard';
 
 @Controller('/auth')
 export class AuthController {
@@ -21,6 +23,7 @@ export class AuthController {
   }
 
   @Post('/validate')
+  @UseGuards(AuthGuard)
   private async validate(
     @Body('authToken') authToken: string,
   ): Promise<boolean> {

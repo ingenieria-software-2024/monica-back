@@ -10,11 +10,13 @@ import {
   UsePipes,
   ValidationPipe,
   Delete,
+  UseGuards,
 } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { CreateProductDto } from './dto/create.producto.dto';
 import { IProductService } from './product.interface';
 import { UpdateProductDto } from './dto/update.producto.dto';
+import { AuthGuard } from 'src/pipes/auth/auth.guard';
 
 @Controller('/products')
 export class ProductController {
@@ -30,6 +32,7 @@ export class ProductController {
 
   @Post()
   @UsePipes(ValidationPipe)
+  @UseGuards(AuthGuard)
   async createProduct(@Body() createProductDto: CreateProductDto) {
     // Usar el DTO directamente
     return this.product.createProduct(createProductDto);
@@ -42,6 +45,7 @@ export class ProductController {
 
   @Put('/:id')
   @UsePipes(ValidationPipe)
+  @UseGuards(AuthGuard)
   async updateProduct(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateProductDto: UpdateProductDto,
@@ -50,6 +54,7 @@ export class ProductController {
   }
 
   @Delete('/:id')
+  @UseGuards(AuthGuard)
   async deleteProduct(@Param('id', ParseIntPipe) id: number) {
     return this.product.deleteProduct(id);
   }

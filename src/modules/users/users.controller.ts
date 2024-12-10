@@ -7,6 +7,9 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  Request,
+  UnauthorizedException,
+  UseGuards,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
@@ -15,8 +18,11 @@ import { UsersService } from './users.service';
 import { User } from '@prisma/client';
 import { IUsersService } from './users.interface';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { Request as RequestType } from 'express';
+import { AuthGuard } from 'src/pipes/auth/auth.guard';
 
 @Controller('/users')
+@UseGuards(AuthGuard)
 export class UsersController {
   constructor(@Inject(UsersService) private readonly service: IUsersService) {}
 
@@ -34,7 +40,25 @@ export class UsersController {
   async updateUser(
     @Param('id', ParseIntPipe) id: number,
     @Body(ValidationPipe) updateUserDto: UpdateUserDto,
+    @Request() req: RequestType,
   ): Promise<User> {
+    // TODO: Migrate this off of the controller.
+    if (updateUserDto?.role) {
+      // Check the user roles if a role change was specified.
+      const authorization = req.headers?.['authorization'];
+
+      const token = authorization?.split(' ')?.[1];
+
+      if (token) {
+        const user = await this.service.getUserById(id);
+
+        if (user.role !== updateUserDto.role)
+          throw new UnauthorizedException(
+            'No tienes permisos para cambiar el rol del usuario.',
+          );
+      }
+    }
+
     return this.service.updateUser(id, updateUserDto);
   }
 

@@ -10,6 +10,7 @@ import {
   UsePipes,
   ValidationPipe,
   Delete,
+  UseGuards,
 } from '@nestjs/common';
 import { Category, SubCategory } from '@prisma/client';
 import { CreateCategoryDto } from './dto/create.category.dto';
@@ -17,6 +18,7 @@ import { CategoryService } from './category.service';
 import { ICategoryService } from './category.interface';
 import { ISubCategoryService } from './subcategory.interface';
 import { SubCategoryService } from './subcategory.service';
+import { AuthGuard } from 'src/pipes/auth/auth.guard';
 
 @Controller('/categories')
 export class CategoryController {
@@ -39,11 +41,13 @@ export class CategoryController {
 
   @Post()
   @UsePipes(ValidationPipe)
+  @UseGuards(AuthGuard)
   async createCategory(@Body() data: CreateCategoryDto) {
     return this.category.createCategory(data.name, data.description);
   }
 
   @Put('/:id')
+  @UsePipes(ValidationPipe)
   async updateCategoryByid(
     @Param('id', ParseIntPipe) id: number,
     @Body() data: Category,
@@ -67,6 +71,7 @@ export class CategoryController {
 
   @Post('/:id/subcategories')
   @UsePipes(ValidationPipe)
+  @UseGuards(AuthGuard)
   async createSubCategory(
     @Param('id', ParseIntPipe) categoryId: number,
     @Body() data: CreateCategoryDto,
@@ -79,6 +84,7 @@ export class CategoryController {
   }
 
   @Delete('/:id')
+  @UseGuards(AuthGuard)
   async deleteCategory(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<Category> {
