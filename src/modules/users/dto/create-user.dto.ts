@@ -1,9 +1,12 @@
 import {
   IsEmail,
+  IsEnum,
   IsNotEmpty,
+  IsOptional,
   IsString,
   IsStrongPassword,
 } from 'class-validator';
+import { UserRole } from '../constant/users.constants';
 
 export class CreateUserDto {
   /**
@@ -40,4 +43,14 @@ export class CreateUserDto {
     minSymbols: 1,
   })
   readonly password: string;
+
+  /**
+   * Especifica un rol diferente con el cual registrar al usuario.
+   *
+   * Por defecto, es `USER`.
+   */
+  @IsString()
+  @IsEnum(UserRole)
+  @IsOptional()
+  readonly role?: UserRole = UserRole.USER;
 }

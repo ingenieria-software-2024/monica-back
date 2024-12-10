@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  Inject,
   NotFoundException,
   Param,
   Post,
@@ -11,10 +12,11 @@ import {
 import { CreateUserDto } from './dto/create-user.dto';
 import { UsersService } from './users.service';
 import { User } from '@prisma/client';
+import { IUsersService } from './users.interface';
 
 @Controller('/users')
 export class UsersController {
-  constructor(private readonly service: UsersService) {}
+  constructor(@Inject(UsersService) private readonly service: IUsersService) {}
 
   /**
    * @returns {Promise<Array<User>>} todos los usuarios

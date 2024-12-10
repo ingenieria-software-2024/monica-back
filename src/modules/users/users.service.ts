@@ -68,10 +68,9 @@ export class UsersService implements IUsersService {
       where: { email: data.email },
     });
 
-    if (existingUser) {
+    if (existingUser)
       // Si el email ya existe, lanzar una excepción ConflictException.
       throw new ConflictException('El email ya está registrado.');
-    }
 
     return this.#users.create({ data: { ...data, password } });
   }
