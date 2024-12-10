@@ -53,7 +53,12 @@ export class UsersService implements IUsersService {
   }
 
   async getUserById(id: number): Promise<User> {
-    return this.#users.findUnique({ where: { id } });
+    const user = this.#users.findUnique({ where: { id } });
+
+    if (!user)
+      throw new NotFoundException(`Usuario con ID ${id} no encontrado.`);
+
+    return user;
   }
 
   async createUser(data: Prisma.UserCreateInput): Promise<User> {
@@ -73,5 +78,17 @@ export class UsersService implements IUsersService {
       throw new ConflictException('El email ya está registrado.');
 
     return this.#users.create({ data: { ...data, password } });
+  }
+
+  async updateUser(id: number, data: Prisma.UserUpdateInput): Promise<User> {
+    // Verificar si el usuario existe.
+    const user = await this.#users.findUnique({ where: { id } });
+
+    if (!user)
+      // Si el usuario no existe, lanzar una excepción NotFoundException.
+      throw new NotFoundException(`Usuario con ID ${id} no encontrado.`);
+
+    // Actualizar el usuario.
+    return this.#users.update({ where: { id }, data });
   }
 }

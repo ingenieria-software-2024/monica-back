@@ -44,4 +44,14 @@ export interface IUsersService {
    * @returns {Promise<User>} El nuevo usuario creado.
    */
   createUser(data: Prisma.UserCreateInput): Promise<User>;
+
+  /**
+   * Modifica a un usuario existente.
+   *
+   * @param {number} id ID del usuario a modificar.
+   * @param {Prisma.UserUpdateInput} data Datos del usuario a modificar.
+   *
+   * @returns {Promise<User>} El usuario modificado.
+   */
+  updateUser(id: number, data: Prisma.UserUpdateInput): Promise<User>;
 }

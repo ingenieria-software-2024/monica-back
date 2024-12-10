@@ -3,8 +3,9 @@ import {
   Controller,
   Get,
   Inject,
-  NotFoundException,
   Param,
+  ParseIntPipe,
+  Patch,
   Post,
   UsePipes,
   ValidationPipe,
@@ -13,6 +14,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UsersService } from './users.service';
 import { User } from '@prisma/client';
 import { IUsersService } from './users.interface';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Controller('/users')
 export class UsersController {
@@ -32,22 +34,18 @@ export class UsersController {
    * @returns {Promise<User>} un usuario según la id proporcionada
    */
   @Get('/:id')
-  async getUserById(@Param('id') id: string): Promise<User> {
-    const user = await this.service.getUserById(parseInt(id));
-    if (!user) {
-      throw new NotFoundException(`Usuario con id ${id} no encontrado`);
-    }
-    return user;
+  async getUserById(@Param('id', ParseIntPipe) id: number): Promise<User> {
+    return await this.service.getUserById(id);
   }
 
-  /**
-   * registra un nuevo usuario
-   *
-   * @param id
-   * @param createUserDto
-   *
-   * @returns {Promise<User>} el usuario creado
-   */
+  @Patch('/:id')
+  async updateUser(
+    @Param('id', ParseIntPipe) id: number,
+    @Body(ValidationPipe) updateUserDto: UpdateUserDto,
+  ): Promise<User> {
+    return this.service.updateUser(id, updateUserDto);
+  }
+
   @Post('/register')
   @UsePipes(
     new ValidationPipe({
