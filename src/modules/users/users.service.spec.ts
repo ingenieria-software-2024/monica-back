@@ -1,8 +1,8 @@
-import { PrismaService } from '../../providers/prisma.service';
 import { UsersService } from './users.service';
 import { Test } from '@nestjs/testing';
 import { CreateUserDto } from './dto/create-user.dto';
 import { isEmail, isStrongPassword } from 'class-validator';
+import { PrismaService } from '../../providers/prisma.service';
 
 describe('Test Unitarios de UsersModule', () => {
   beforeAll(async () => {
