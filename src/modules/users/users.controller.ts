@@ -20,19 +20,11 @@ import { UpdateUserDto } from './dto/update-user.dto';
 export class UsersController {
   constructor(@Inject(UsersService) private readonly service: IUsersService) {}
 
-  /**
-   * @returns {Promise<Array<User>>} todos los usuarios
-   */
   @Get()
   async getAllUsers(): Promise<Array<User>> {
     return this.service.getAllUsers();
   }
 
-  /**
-   * @param id
-   *
-   * @returns {Promise<User>} un usuario según la id proporcionada
-   */
   @Get('/:id')
   async getUserById(@Param('id', ParseIntPipe) id: number): Promise<User> {
     return await this.service.getUserById(id);
