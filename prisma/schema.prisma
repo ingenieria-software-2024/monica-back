@@ -69,16 +69,18 @@ model SubCategory {
 }
 
 model Product {
-  id                     Int               @id @default(autoincrement())
+  id                     Int                    @id @default(autoincrement())
   name                   String
   description            String?
   defaultVariantImageUrl String
   categories             Category[]
   subCategories          SubCategory[]
-  variantCategories      VariantCategory[] @relation("ProductVariantCategories")
+  variantCategories      VariantCategory[]      @relation("ProductVariantCategories")
   ProductVariant         ProductVariant[]
   HistoricProduct        HistoricProduct[]
-  isDeleted              Boolean           @default(false)
+  isDeleted              Boolean                @default(false)
+  AuditProductCreation   AuditProductCreation[]
+  AuditProductEdit       AuditProductEdit[]
 }
 
 // Esta entidad sirve como auditora para los productos creados y sus modificaciones de precio en algún momento dado.
@@ -92,12 +94,15 @@ model HistoricProduct {
 }
 
 model User {
-  id        Int        @id @default(autoincrement())
-  username  String     @unique
-  email     String     @unique
-  password  String
-  role      String     @default("USER")
-  cartItems CartItem[]
+  id                   Int                    @id @default(autoincrement())
+  username             String                 @unique
+  email                String                 @unique
+  password             String
+  role                 String                 @default("USER")
+  cartItems            CartItem[]
+  AuditUserLogin       AuditUserLogin[]
+  AuditProductCreation AuditProductCreation[]
+  AuditProductEdit     AuditProductEdit[]
 }
 
 model CartItem {
@@ -108,4 +113,37 @@ model CartItem {
   productVariantId Int
   user             User           @relation(fields: [userId], references: [id])
   productVariant   ProductVariant @relation(fields: [productVariantId], references: [id])
+}
+
+model AuditUserLogin {
+  id               Int      @id @default(autoincrement())
+  userId           Int
+  user             User     @relation(fields: [userId], references: [id])
+  loginDate        DateTime @default(now())
+  ip               String
+  browser          String
+  os               String
+  triesBeforeLogin Int      @default(1)
+}
+
+model AuditProductCreation {
+  id          Int      @id @default(autoincrement())
+  productId   Int
+  product     Product  @relation(fields: [productId], references: [id])
+  createdAt   DateTime @default(now())
+  createdById Int
+  createdBy   User     @relation(fields: [createdById], references: [id])
+}
+
+model AuditProductEdit {
+  id                Int      @id @default(autoincrement())
+  productId         Int
+  product           Product  @relation(fields: [productId], references: [id])
+  createdAt         DateTime @default(now())
+  modifiedById      Int
+  modifiedBy        User     @relation(fields: [modifiedById], references: [id])
+  nameBefore        String?
+  nameAfter         String?
+  descriptionBefore String?
+  descriptionAfter  String?
 }
