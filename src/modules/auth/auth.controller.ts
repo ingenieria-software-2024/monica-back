@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Inject,
+  Param,
   Post,
   UseGuards,
   UsePipes,
@@ -11,6 +12,8 @@ import { IAuthService } from './auth.interface';
 import { AuthService } from './auth.service';
 import { AuthLoginDto } from './dto/auth.login.dto';
 import { AuthGuard } from 'src/pipes/auth/auth.guard';
+import { AuthRecoveryDto } from './dto/auth.recovery.dto';
+import { AuthRecoveryNewDto } from './dto/auth.recovery.new.dto';
 
 @Controller('/auth')
 export class AuthController {
@@ -28,5 +31,20 @@ export class AuthController {
     @Body('authToken') authToken: string,
   ): Promise<boolean> {
     return this.service.validateSession(authToken);
+  }
+
+  @Post('/recovery')
+  @UsePipes(ValidationPipe)
+  private async recovery(@Body() body: AuthRecoveryDto): Promise<void> {
+    return this.service.recoverPassword(body.email);
+  }
+
+  @Post('/recovery/:email')
+  @UsePipes(ValidationPipe)
+  private async changePassword(
+    @Param('email') email: string,
+    @Body() body: AuthRecoveryNewDto,
+  ): Promise<void> {
+    return this.service.changePassword(email, body.code, body.password);
   }
 }

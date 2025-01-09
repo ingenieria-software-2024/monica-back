@@ -94,15 +94,17 @@ model HistoricProduct {
 }
 
 model User {
-  id                   Int                    @id @default(autoincrement())
-  username             String                 @unique
-  email                String                 @unique
-  password             String
-  role                 String                 @default("USER")
-  cartItems            CartItem[]
-  AuditUserLogin       AuditUserLogin[]
-  AuditProductCreation AuditProductCreation[]
-  AuditProductEdit     AuditProductEdit[]
+  id                    Int                    @id @default(autoincrement())
+  username              String                 @unique
+  email                 String                 @unique
+  password              String
+  role                  String                 @default("USER")
+  recoveryCode          String?
+  recoveryCodeGenerated DateTime?
+  cartItems             CartItem[]
+  AuditUserLogin        AuditUserLogin[]
+  AuditProductCreation  AuditProductCreation[]
+  AuditProductEdit      AuditProductEdit[]
 }
 
 model CartItem {

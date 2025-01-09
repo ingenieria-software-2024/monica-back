@@ -95,4 +95,21 @@ export class UsersService implements IUsersService {
     // Actualizar el usuario.
     return this.#users.update({ where: { id }, data });
   }
+
+  async startPasswordRecovery(email: string, code: string): Promise<void> {
+    // Rellena el código generado en el usuario.
+    await this.#users.update({
+      where: { email },
+      data:
+        code === null
+          ? {
+              recoveryCode: null,
+              recoveryCodeGenerated: null,
+            }
+          : {
+              recoveryCode: code,
+              recoveryCodeGenerated: new Date(),
+            },
+    });
+  }
 }
