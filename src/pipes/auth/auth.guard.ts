@@ -1,17 +1,13 @@
 import {
   CanActivate,
   ExecutionContext,
-  Inject,
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
-import { IAuthService } from 'src/modules/auth/auth.interface';
 import { AuthService } from 'src/modules/auth/auth.service';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
-  constructor(@Inject(AuthService) private readonly auth: IAuthService) {}
-
   async canActivate(context: ExecutionContext): Promise<boolean> {
     // Obtain the HTTP context for the authentication token.
     const http = context.switchToHttp();
@@ -31,6 +27,6 @@ export class AuthGuard implements CanActivate {
     if (_.toLowerCase() !== 'Bearer') return false;
 
     // Check if the authorization header is a Bearer token.
-    return await this.auth.validateSession(token);
+    return AuthService.validateTokenStatic(token);
   }
 }

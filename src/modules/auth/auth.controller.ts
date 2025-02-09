@@ -3,6 +3,7 @@ import {
   Controller,
   Inject,
   Post,
+  Req,
   UseGuards,
   UsePipes,
   ValidationPipe,
@@ -11,6 +12,7 @@ import { IAuthService } from './auth.interface';
 import { AuthService } from './auth.service';
 import { AuthLoginDto } from './dto/auth.login.dto';
 import { AuthGuard } from 'src/pipes/auth/auth.guard';
+import { Request } from 'express';
 
 @Controller('/auth')
 export class AuthController {
@@ -18,8 +20,11 @@ export class AuthController {
 
   @Post('/login')
   @UsePipes(ValidationPipe)
-  private async login(@Body() body: AuthLoginDto): Promise<string> {
-    return this.service.authenticate(body.username, body.password);
+  private async login(
+    @Body() body: AuthLoginDto,
+    @Req() request: Request,
+  ): Promise<string> {
+    return this.service.authenticate(body.username, body.password, request);
   }
 
   @Post('/validate')

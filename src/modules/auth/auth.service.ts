@@ -10,6 +10,9 @@ import { UserSession } from './types/user.token.type';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '../users/users.service';
 import { IUsersService } from '../users/users.interface';
+import { AuditUserService } from '../audit/audit.users.service';
+import { IAuditUserService } from '../audit/audit.users.interface';
+import { Request } from 'express';
 
 @Injectable()
 export class AuthService implements IAuthService {
@@ -18,7 +21,28 @@ export class AuthService implements IAuthService {
   constructor(
     private readonly jwt: JwtService,
     @Inject(UsersService) private readonly users: IUsersService,
+    @Inject(AuditUserService) private readonly audit: IAuditUserService,
   ) {}
+
+  public static validateTokenStatic(token: string): boolean {
+    try {
+      const payload = token?.split('.')?.[1];
+
+      // Decodificar el payload.
+      const decodedPayload = Buffer.from(payload, 'base64').toString('utf-8');
+
+      // Convertir a objeto.
+      const parsedPayload: UserSession = JSON.parse(decodedPayload);
+
+      // Verificar que el payload sea valido.
+      if (!parsedPayload) return false;
+
+      return true;
+    } catch (error) {
+      console.error(`Error al validar la sesion: ${error}`);
+      return false;
+    }
+  }
 
   /**
    * Genera una nueva JWT firmada con la sesion de un usuario.
@@ -43,7 +67,11 @@ export class AuthService implements IAuthService {
     return token;
   }
 
-  async authenticate(username: string, password: string): Promise<string> {
+  async authenticate(
+    username: string,
+    password: string,
+    req?: Request,
+  ): Promise<string> {
     // Buscar al usuario.
     const user = await this.users.getUserByUsernameOrEmail(username);
 
@@ -63,6 +91,9 @@ export class AuthService implements IAuthService {
 
     // Generar la sesion.
     const authToken = this.generateAndSignSession(user);
+
+    // Auditar la sesion.
+    await this.audit.logUserLogin(user, req.ip, req.headers['user-agent']);
 
     return authToken;
   }

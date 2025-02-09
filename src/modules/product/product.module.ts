@@ -5,9 +5,15 @@ import { ProductController } from './product.controller';
 import { CategoryModule } from '../category/category.module';
 import { VariantCategoryModule } from '../category/variant/variant.category.module';
 import { ProductVariantModule } from './variants/product.variants.module';
+import { AuditModule } from '../audit/audit.module';
 
 @Module({
-  imports: [CategoryModule, VariantCategoryModule, ProductVariantModule],
+  imports: [
+    CategoryModule,
+    VariantCategoryModule,
+    ProductVariantModule,
+    AuditModule,
+  ],
   providers: [ProductService, PrismaService],
   exports: [ProductService],
   controllers: [ProductController],
