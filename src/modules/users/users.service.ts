@@ -68,14 +68,18 @@ export class UsersService implements IUsersService {
     // Hashear contraseña del usuario.
     const password = await hash(data.password, salt);
 
-    //Verificar que el email sea único
-    const existingUser = await this.#users.findUnique({
-      where: { email: data.email },
+    // Verificar que el email sea único
+    const existingUser = await this.#users.findFirst({
+      where: {
+        OR: [{ email: data.email }, { username: data.username }],
+      },
     });
 
     if (existingUser)
       // Si el email ya existe, lanzar una excepción ConflictException.
-      throw new ConflictException('El email ya está registrado.');
+      throw new ConflictException(
+        'El email o nombre de usuario ya estan registrados.',
+      );
 
     return this.#users.create({ data: { ...data, password } });
   }
@@ -90,5 +94,22 @@ export class UsersService implements IUsersService {
 
     // Actualizar el usuario.
     return this.#users.update({ where: { id }, data });
+  }
+
+  async startPasswordRecovery(email: string, code: string): Promise<void> {
+    // Rellena el código generado en el usuario.
+    await this.#users.update({
+      where: { email },
+      data:
+        code === null
+          ? {
+              recoveryCode: null,
+              recoveryCodeGenerated: null,
+            }
+          : {
+              recoveryCode: code,
+              recoveryCodeGenerated: new Date(),
+            },
+    });
   }
 }

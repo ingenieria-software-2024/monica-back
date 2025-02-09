@@ -9,4 +9,7 @@ export type UserSession = {
 
   /** El correo electronico de la cuenta. */
   email: string;
+
+  /** El rol asignado a esta cuenta. */
+  role: string;
 };
