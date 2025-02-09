@@ -17,6 +17,9 @@ import { IUsersService } from '../users/users.interface';
 import { MailService } from '../mail/mail.service';
 import { IMailService } from '../mail/mail.interface';
 import { genSalt, hash } from 'bcrypt';
+import { AuditUserService } from '../audit/audit.users.service';
+import { IAuditUserService } from '../audit/audit.users.interface';
+import type { Request } from 'express';
 
 @Injectable()
 export class AuthService implements IAuthService {
@@ -26,6 +29,7 @@ export class AuthService implements IAuthService {
     private readonly jwt: JwtService,
     @Inject(UsersService) private readonly users: IUsersService,
     @Inject(MailService) private readonly mail: IMailService,
+    @Inject(AuditUserService) private readonly audit: IAuditUserService,
   ) {}
 
   /**
@@ -95,7 +99,11 @@ export class AuthService implements IAuthService {
     const authToken = this.generateAndSignSession(user);
 
     // Auditar la sesion.
-    await this.audit.logUserLogin(user, req.ip, req.headers['user-agent']);
+    await this.audit.logUserLogin(
+      user,
+      req?.ip ?? '',
+      req.headers['user-agent'],
+    );
 
     return authToken;
   }
