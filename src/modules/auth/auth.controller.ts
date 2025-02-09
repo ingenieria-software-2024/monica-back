@@ -15,6 +15,7 @@ import { AuthLoginDto } from './dto/auth.login.dto';
 import { AuthGuard } from 'src/pipes/auth/auth.guard';
 import { AuthRecoveryDto } from './dto/auth.recovery.dto';
 import { AuthRecoveryNewDto } from './dto/auth.recovery.new.dto';
+import type { Request } from 'express';
 
 @Controller('/auth')
 export class AuthController {
