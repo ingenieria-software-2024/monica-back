@@ -32,6 +32,28 @@ export class AuthService implements IAuthService {
     @Inject(AuditUserService) private readonly audit: IAuditUserService,
   ) {}
 
+  public static validateTokenStatic(token: string): boolean {
+    try {
+      // Obtain the payload from the token.
+      const payload = token?.split('.')?.[1];
+
+      if (!payload) return false;
+
+      // Decode the payload.
+      const decoded = Buffer.from(payload, 'base64').toString('utf-8');
+
+      // Parse the JSON payload.
+      const json: UserSession = JSON.parse(decoded);
+
+      if (!json) return false;
+
+      return true;
+    } catch (error) {
+      console.error(error);
+      return false;
+    }
+  }
+
   /**
    * Genera un código de un solo uso de 4 dígitos para la recuperación de contraseñas.
    *
