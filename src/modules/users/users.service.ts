@@ -3,7 +3,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { PrismaService } from 'src/providers/prisma.service';
+import { PrismaService } from '../../providers/prisma.service';
 import { Prisma, User } from '@prisma/client';
 import { IUsersService } from './users.interface';
 import { genSalt, hash, compare } from 'bcrypt';
@@ -97,6 +97,19 @@ export class UsersService implements IUsersService {
   }
 
   async startPasswordRecovery(email: string, code: string): Promise<void> {
+    // Verificar si el usuario existe.
+    const user = await this.#users.findUnique({ where: { email } });
+
+    if (!user)
+      // Si el usuario no existe, lanzar una excepción NotFoundException.
+      throw new NotFoundException(`Usuario con correo ${email} no encontrado.`);
+
+    // Si se ha generado un código de recuperación, lanzar una excepción.
+    if (user?.recoveryCode !== null && user?.recoveryCodeGenerated)
+      throw new ConflictException(
+        'Ya se ha generado un código de recuperación',
+      );
+
     // Rellena el código generado en el usuario.
     await this.#users.update({
       where: { email },
