@@ -24,7 +24,7 @@ export class AuditUserService implements IAuditUserService {
         userId: user.id,
         ip: ipAddress,
         browser: userAgent,
-        os,
+        os: os ?? 'Unknown',
       },
     });
   }

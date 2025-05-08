@@ -28,7 +28,7 @@ export class AuthGuard implements CanActivate {
     // Check if the authorization header is valid.
     const [_, token]: Array<string> = authorization.split(' ');
 
-    if (_.toLowerCase() !== 'bearer') return false;
+    if (_.toLowerCase() !== 'Bearer') return false;
 
     // Check if the authorization header is a Bearer token.
     return await this.service.validateSession(token);

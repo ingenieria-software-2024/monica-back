@@ -22,21 +22,23 @@ import { Request as RequestType } from 'express';
 import { AuthGuard } from 'src/pipes/auth/auth.guard';
 
 @Controller('/users')
-@UseGuards(AuthGuard)
 export class UsersController {
   constructor(@Inject(UsersService) private readonly service: IUsersService) {}
 
   @Get()
+  @UseGuards(AuthGuard)
   async getAllUsers(): Promise<Array<User>> {
     return this.service.getAllUsers();
   }
 
   @Get('/:id')
+  @UseGuards(AuthGuard)
   async getUserById(@Param('id', ParseIntPipe) id: number): Promise<User> {
     return await this.service.getUserById(id);
   }
 
   @Patch('/:id')
+  @UseGuards(AuthGuard)
   async updateUser(
     @Param('id', ParseIntPipe) id: number,
     @Body(ValidationPipe) updateUserDto: UpdateUserDto,
