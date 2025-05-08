@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { IAuditUserService } from './audit.users.interface';
 import { User, AuditUserLogin } from '@prisma/client';
-import { PrismaService } from 'src/providers/prisma.service';
+import { PrismaService } from '../../providers/prisma.service';
 
 @Injectable()
 export class AuditUserService implements IAuditUserService {
