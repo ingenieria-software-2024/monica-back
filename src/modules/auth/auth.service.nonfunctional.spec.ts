@@ -1,4 +1,3 @@
-// src/modules/auth/auth.service.test.ts
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthService } from './auth.service';
 import { JwtService } from '@nestjs/jwt';
@@ -61,12 +60,12 @@ describe('AuthService', () => {
   });
 
   describe('authenticate', () => {
-    it('should authenticate a user successfully', async () => {
+    it('Prueba No Funcional: debería autenticar a un usuario exitosamente', async () => {
       const mockUser = { username: 'test', password: 'hashedPassword' };
       const mockReq = {
         ip: '127.0.0.1',
         headers: { 'user-agent': 'test-agent' },
-      }; // Mocked request object
+      };
 
       mockUsersService.getUserByUsernameOrEmail.mockResolvedValue(mockUser);
       mockUsersService.verifyPassword.mockResolvedValue(true);
@@ -98,7 +97,7 @@ describe('AuthService', () => {
       expect(token).toBe('mockToken');
     });
 
-    it('should throw UnauthorizedException if user is not found', async () => {
+    it('Prueba No Funcional: debería lanzar UnauthorizedException si el usuario no se encuentra', async () => {
       mockUsersService.getUserByUsernameOrEmail.mockResolvedValue(null);
 
       await expect(
@@ -106,7 +105,7 @@ describe('AuthService', () => {
       ).rejects.toThrow(UnauthorizedException);
     });
 
-    it('should throw UnauthorizedException if password is invalid', async () => {
+    it('Prueba No Funcional: debería lanzar UnauthorizedException si la contraseña es inválida', async () => {
       const mockUser = { username: 'test', password: 'hashedPassword' };
       mockUsersService.getUserByUsernameOrEmail.mockResolvedValue(mockUser);
       mockUsersService.verifyPassword.mockResolvedValue(false);
@@ -118,7 +117,7 @@ describe('AuthService', () => {
   });
 
   describe('validateSession', () => {
-    it('should return true for a valid session', async () => {
+    it('Prueba No Funcional: debería devolver verdadero para una sesión válida', async () => {
       const mockPayload = { username: 'test' };
       const mockUser = { username: 'test' };
       mockJwtService.verify.mockReturnValue(mockPayload);
@@ -133,9 +132,9 @@ describe('AuthService', () => {
       expect(isValid).toBe(true);
     });
 
-    it('should return false for an invalid session', async () => {
+    it('Prueba No Funcional: debería devolver falso para una sesión inválida', async () => {
       mockJwtService.verify.mockImplementation(() => {
-        throw new Error('Invalid token');
+        throw new Error('Token inválido');
       });
 
       const isValid = await authService.validateSession('invalidToken');
@@ -146,7 +145,7 @@ describe('AuthService', () => {
   });
 
   describe('recoverPassword', () => {
-    it('should send recovery code successfully', async () => {
+    it('Prueba No Funcional: debería enviar el código de recuperación exitosamente', async () => {
       const mockUser = { email: 'test@example.com', recoveryCode: null };
       mockUsersService.getUserByUsernameOrEmail.mockResolvedValue(mockUser);
 
@@ -159,7 +158,7 @@ describe('AuthService', () => {
       expect(mailService.sendRecoveryCode).toHaveBeenCalled();
     });
 
-    it('should throw NotFoundException if user is not found', async () => {
+    it('Prueba No Funcional: debería lanzar NotFoundException si el usuario no se encuentra', async () => {
       mockUsersService.getUserByUsernameOrEmail.mockResolvedValue(null);
 
       await expect(
@@ -167,7 +166,7 @@ describe('AuthService', () => {
       ).rejects.toThrow(NotFoundException);
     });
 
-    it('should throw HttpException if recovery code already exists and is not expired', async () => {
+    it('Prueba No Funcional: debería lanzar HttpException si ya existe un código de recuperación y no ha expirado', async () => {
       const mockUser = {
         email: 'test@example.com',
         recoveryCode: '1234',
@@ -182,7 +181,7 @@ describe('AuthService', () => {
   });
 
   describe('changePassword', () => {
-    it('should change password successfully', async () => {
+    it('Prueba No Funcional: debería cambiar la contraseña exitosamente', async () => {
       const mockUser = {
         email: 'test@example.com',
         recoveryCode: '1234',
@@ -203,7 +202,7 @@ describe('AuthService', () => {
       );
     });
 
-    it('should throw UnauthorizedException for invalid recovery code', async () => {
+    it('Prueba No Funcional: debería lanzar UnauthorizedException para un código de recuperación inválido', async () => {
       const mockUser = { email: 'test@example.com', recoveryCode: '5678' };
       mockUsersService.getUserByUsernameOrEmail.mockResolvedValue(mockUser);
 
@@ -212,11 +211,11 @@ describe('AuthService', () => {
       ).rejects.toThrow(UnauthorizedException);
     });
 
-    it('should throw UnauthorizedException for expired recovery code', async () => {
+    it('Prueba No Funcional: debería lanzar UnauthorizedException para un código de recuperación expirado', async () => {
       const mockUser = {
         email: 'test@example.com',
         recoveryCode: '1234',
-        recoveryCodeGenerated: new Date(Date.now() - 600_000),
+        recoveryCodeGenerated: new Date(Date.now() - 600_000), // 10 minutes ago
       };
       mockUsersService.getUserByUsernameOrEmail.mockResolvedValue(mockUser);
 
