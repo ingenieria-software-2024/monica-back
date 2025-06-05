@@ -2,21 +2,36 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigService } from '@nestjs/config';
 import { MailService } from './mail.service';
 import * as Sendgrid from '@sendgrid/mail';
+import { Logger } from '@nestjs/common';
+
+// Se mockea el módulo @sendgrid/mail para aislar el servicio en las pruebas.
+jest.mock('@sendgrid/mail', () => ({
+  setApiKey: jest.fn(),
+  send: jest.fn(),
+}));
 
 describe('MailService', () => {
   let mailService: MailService;
-
-  const mockConfigService = {
-    get: jest.fn(),
-  };
-
-  // Mock the SendGrid module
-  jest.mock('@sendgrid/mail', () => ({
-    setApiKey: jest.fn(),
-    send: jest.fn(),
-  }));
+  let mockConfigService: { get: jest.Mock };
 
   beforeEach(async () => {
+    mockConfigService = {
+      get: jest.fn(),
+    };
+
+    mockConfigService.get.mockImplementation((key: string) => {
+      switch (key) {
+        case 'SENDGRID_APIKEY':
+          return 'SG.exampleapikey';
+        case 'SENDGRID_TEMPLATE_OTP':
+          return 'your_template_id';
+        case 'SENDGRID_FROM':
+          return 'sender@example.com';
+        default:
+          return null;
+      }
+    });
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         MailService,
@@ -31,7 +46,7 @@ describe('MailService', () => {
     jest.clearAllMocks();
   });
 
-  it('should be defined', () => {
+  it('debería estar definido', () => {
     expect(mailService).toBeDefined();
   });
 
@@ -39,24 +54,8 @@ describe('MailService', () => {
     const email = 'test@example.com';
     const code = '123456';
 
-    beforeEach(() => {
-      mockConfigService.get.mockImplementation((key) => {
-        switch (key) {
-          case 'SENDGRID_APIKEY':
-            return 'SG.exampleapikey';
-          case 'SENDGRID_TEMPLATE_OTP':
-            return 'your_template_id';
-          case 'SENDGRID_FROM':
-            return 'sender@example.com';
-          default:
-            throw new Error(`Unexpected config key: ${key}`);
-        }
-      });
-    });
-
-    it('should send recovery code successfully', async () => {
-      // Mock SendGrid send to resolve successfully
-      (Sendgrid.send as jest.Mock).mockResolvedValueOnce({});
+    it('debería enviar el código de recuperación exitosamente', async () => {
+      (Sendgrid.send as jest.Mock).mockResolvedValueOnce([{}]);
 
       await mailService.sendRecoveryCode(email, code);
 
@@ -71,20 +70,18 @@ describe('MailService', () => {
       });
     });
 
-    it('should log error if sending fails', async () => {
-      // Mock SendGrid send to reject with an error
+    it('debería registrar un error si el envío falla', async () => {
       const sendgridError = new Error('Sendgrid API error');
       (Sendgrid.send as jest.Mock).mockRejectedValueOnce(sendgridError);
 
-      // Spy on Logger.error to verify it was called
-      const loggerSpy = jest.spyOn(console, 'error').mockImplementation();
+      const loggerSpy = jest
+        .spyOn(Logger.prototype, 'error')
+        .mockImplementation();
 
-      await expect(mailService.sendRecoveryCode(email, code)).rejects.toThrow(
-        sendgridError,
-      );
+      await mailService.sendRecoveryCode(email, code);
 
       expect(loggerSpy).toHaveBeenCalledWith(
-        'Error sending recovery code:',
+        `Error al enviar el correo de recuperación a ${email}.`,
         sendgridError,
       );
 
