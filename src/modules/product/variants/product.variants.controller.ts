@@ -18,7 +18,7 @@ import { PositiveIntegerPipe } from 'src/pipes/positive.integer.pipe';
 import { StockService } from '../stock/stock.service';
 import { IStockService } from '../stock/stock.interface';
 
-@Controller('/products/variants')
+@Controller('/product/variants')
 export class ProductVariantController {
   constructor(
     @Inject(ProductVariantService)

@@ -2,50 +2,68 @@ import {
   Body,
   Controller,
   Get,
-  NotFoundException,
+  Inject,
   Param,
+  ParseIntPipe,
+  Patch,
   Post,
+  Request,
+  UnauthorizedException,
+  UseGuards,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UsersService } from './users.service';
 import { User } from '@prisma/client';
+import { IUsersService } from './users.interface';
+import { UpdateUserDto } from './dto/update-user.dto';
+import { Request as RequestType } from 'express';
+import { AuthGuard } from 'src/pipes/auth/auth.guard';
 
 @Controller('/users')
 export class UsersController {
-  constructor(private readonly service: UsersService) {}
+  constructor(@Inject(UsersService) private readonly service: IUsersService) {}
 
-  /**
-   * @returns {Promise<Array<User>>} todos los usuarios
-   */
   @Get()
+  @UseGuards(AuthGuard)
   async getAllUsers(): Promise<Array<User>> {
     return this.service.getAllUsers();
   }
 
-  /**
-   * @param id
-   *
-   * @returns {Promise<User>} un usuario según la id proporcionada
-   */
   @Get('/:id')
-  async getUserById(@Param('id') id: string): Promise<User> {
-    const user = await this.service.getUserById(parseInt(id));
-    if (!user) {
-      throw new NotFoundException(`Usuario con id ${id} no encontrado`);
-    }
-    return user;
+  @UseGuards(AuthGuard)
+  async getUserById(@Param('id', ParseIntPipe) id: number): Promise<User> {
+    return await this.service.getUserById(id);
   }
 
-  /**
-   * registra un nuevo usuario
-   *
-   * @param id
-   * @param createUserDto
-   *
-   * @returns {Promise<User>} el usuario creado
-   */
+  @Patch('/:id')
+  @UseGuards(AuthGuard)
+  async updateUser(
+    @Param('id', ParseIntPipe) id: number,
+    @Body(ValidationPipe) updateUserDto: UpdateUserDto,
+    @Request() req: RequestType,
+  ): Promise<User> {
+    // TODO: Migrate this off of the controller.
+    if (updateUserDto?.role) {
+      // Check the user roles if a role change was specified.
+      const authorization = req.headers?.['authorization'];
+
+      const token = authorization?.split(' ')?.[1];
+
+      if (token) {
+        const user = await this.service.getUserById(id);
+
+        if (user.role !== updateUserDto.role)
+          throw new UnauthorizedException(
+            'No tienes permisos para cambiar el rol del usuario.',
+          );
+      }
+    }
+
+    return this.service.updateUser(id, updateUserDto);
+  }
+
   @Post('/register')
   @UsePipes(
     new ValidationPipe({

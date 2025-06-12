@@ -44,4 +44,24 @@ export interface IUsersService {
    * @returns {Promise<User>} El nuevo usuario creado.
    */
   createUser(data: Prisma.UserCreateInput): Promise<User>;
+
+  /**
+   * Modifica a un usuario existente.
+   *
+   * @param {number} id ID del usuario a modificar.
+   * @param {Prisma.UserUpdateInput} data Datos del usuario a modificar.
+   *
+   * @returns {Promise<User>} El usuario modificado.
+   */
+  updateUser(id: number, data: Prisma.UserUpdateInput): Promise<User>;
+
+  /**
+   * Inicia un flujo de recuperación de contraseña para un usuario.
+   *
+   * @param {string} email Correo electronico del usuario.
+   * @param {string} code Código de recuperación. Un valor de `null` anula el proceso de recuperación.
+   *
+   * @returns {Promise<void>} Promesa que se resuelve cuando el proceso de recuperación ha iniciado o se ha cancelado.
+   */
+  startPasswordRecovery(email: string, code: string): Promise<void>;
 }
