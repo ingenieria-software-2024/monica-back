@@ -66,7 +66,7 @@ COPY --chown=node:node --from=build /usr/src/app/prisma ./prisma
 # Copy package.json for runtime access (e.g., by monitoring tools or libraries).
 COPY --chown=node:node --from=build /usr/src/app/package.json ./
 
-# Copy the generated Prisma client from the 'build' stage. This is crucial. 
+# Copy the generated Prisma client from the 'build' stage. This is crucial.
 COPY --chown=node:node --from=build /usr/src/app/node_modules/.prisma ./node_modules/.prisma
 
 # Switch to the non-root 'node' user for better security.
