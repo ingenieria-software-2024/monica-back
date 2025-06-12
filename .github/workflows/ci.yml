@@ -7,6 +7,7 @@ on:
     # Se activará solo para Pull Requests que apunten a la rama 'canary'.
     branches:
       - 'canary'
+      - 'main'
     # Tipos de eventos de PR que activarán el workflow.
     # 'opened': cuando se abre la PR.
     # 'synchronize': cada vez que se hace un nuevo push a la PR.
