@@ -1,0 +1,48 @@
+# Nombre que aparecerá en la pestaña "Actions" de tu repositorio.
+name: '🧪 Pruebas en PR: dev -> canary'
+
+# La sección clave: aquí definimos CUÁNDO se debe ejecutar este workflow.
+on:
+  pull_request:
+    # Se activará solo para Pull Requests que apunten a la rama 'canary'.
+    branches:
+      - 'canary'
+      - 'main'
+    # Tipos de eventos de PR que activarán el workflow.
+    # 'opened': cuando se abre la PR.
+    # 'synchronize': cada vez que se hace un nuevo push a la PR.
+    types: [opened, synchronize]
+
+jobs:
+  # Definimos un único "trabajo" llamado 'test'.
+  test:
+    name: 'Ejecutar Pruebas Unitarias y de Integración'
+    # Usamos la última versión de Ubuntu como sistema operativo para nuestro ejecutor.
+    runs-on: ubuntu-latest
+
+    steps:
+      # Paso 1: Descargar el código de tu repositorio al ejecutor.
+      - name: '⬇️ Descargar código'
+        uses: actions/checkout@v4
+
+      # Paso 2: Configurar el entorno de Node.js.
+      - name: '⚙️ Configurar Node.js'
+        uses: actions/setup-node@v4
+        with:
+          # Especificá la versión de Node que usa tu proyecto.
+          node-version: '22.x'
+          # Un pro-tip: cachear las dependencias acelera MUCHO las ejecuciones futuras.
+          cache: 'yarn' # o 'yarn' si usás yarn
+
+      # Paso 3: Instalar las dependencias del proyecto.
+      # `npm ci` es más rápido y seguro para entornos de automatización que `npm install`.
+      - name: '📦 Instalar dependencias'
+        run: yarn install --frozen-lockfile # o `yarn install --frozen-lockfile` si usás yarn
+
+      # Paso 4: Ejecutar los tests de Jest.
+      # Este comando buscará y ejecutará todos los archivos *.test.js o *.spec.js.
+      # El flag --ci optimiza Jest para entornos de CI.
+      # El flag --runInBand es útil si tus tests de integración no deben correr en paralelo.
+      - name: '🚀 Ejecutar Pruebas (Unitarias e Integración)'
+        run: yarn test -- --ci --runInBand
+        # El doble guion (--) es para pasarle argumentos directamente al script de npm.

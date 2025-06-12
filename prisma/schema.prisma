@@ -1,0 +1,152 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["strictUndefinedChecks"]
+  binaryTargets   = ["native", "linux-musl-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model VariantCategory {
+  id             Int              @id @default(autoincrement())
+  name           String
+  description    String?
+  ProductVariant ProductVariant[]
+  products       Product[]        @relation("ProductVariantCategories")
+}
+
+model ProductVariant {
+  id                Int                @id @default(autoincrement())
+  name              String
+  description       String?
+  price             Float
+  imageUrl          String?
+  stock             Int
+  stockMin          Int
+  productId         Int
+  variantCategoryId Int // Referencia a la categoría de variante
+  product           Product            @relation(fields: [productId], references: [id])
+  variantCategory   VariantCategory    @relation(fields: [variantCategoryId], references: [id])
+  HistoricStockLog  HistoricStockLog[]
+  CartItem          CartItem[]
+}
+
+model HistoricStockLog {
+  id               Int            @id @default(autoincrement())
+  productVariantId Int
+  productVariant   ProductVariant @relation(fields: [productVariantId], references: [id])
+  isIngress        Boolean
+  quantity         Int
+  createdAt        DateTime       @default(now())
+  createdBy        String?
+  reason           String?
+}
+
+model Category {
+  id          Int           @id @default(autoincrement())
+  name        String
+  description String?
+  SubCategory SubCategory[]
+  Product     Product[]
+  isDeleted   Boolean       @default(false)
+}
+
+model SubCategory {
+  id          Int       @id @default(autoincrement())
+  name        String
+  description String?
+  categoryId  Int
+  category    Category  @relation(fields: [categoryId], references: [id])
+  Products    Product[]
+  isDeleted   Boolean   @default(false)
+}
+
+model Product {
+  id                     Int                    @id @default(autoincrement())
+  name                   String
+  description            String?
+  defaultVariantImageUrl String
+  categories             Category[]
+  subCategories          SubCategory[]
+  variantCategories      VariantCategory[]      @relation("ProductVariantCategories")
+  ProductVariant         ProductVariant[]
+  HistoricProduct        HistoricProduct[]
+  isDeleted              Boolean                @default(false)
+  AuditProductCreation   AuditProductCreation[]
+  AuditProductEdit       AuditProductEdit[]
+}
+
+// Esta entidad sirve como auditora para los productos creados y sus modificaciones de precio en algún momento dado.
+model HistoricProduct {
+  id         Int      @id @default(autoincrement())
+  productId  Int
+  product    Product  @relation(fields: [productId], references: [id])
+  price      Float
+  createdAt  DateTime @default(now())
+  modifiedBy String?
+}
+
+model User {
+  id                    Int                    @id @default(autoincrement())
+  username              String                 @unique
+  email                 String                 @unique
+  password              String
+  role                  String                 @default("USER")
+  recoveryCode          String?
+  recoveryCodeGenerated DateTime?
+  cartItems             CartItem[]
+  AuditUserLogin        AuditUserLogin[]
+  AuditProductCreation  AuditProductCreation[]
+  AuditProductEdit      AuditProductEdit[]
+}
+
+model CartItem {
+  id               Int            @id @default(autoincrement())
+  quantity         Int
+  totalPrice       Float
+  userId           Int
+  productVariantId Int
+  user             User           @relation(fields: [userId], references: [id])
+  productVariant   ProductVariant @relation(fields: [productVariantId], references: [id])
+}
+
+model AuditUserLogin {
+  id               Int      @id @default(autoincrement())
+  userId           Int
+  user             User     @relation(fields: [userId], references: [id])
+  loginDate        DateTime @default(now())
+  ip               String
+  browser          String
+  os               String
+  triesBeforeLogin Int      @default(1)
+}
+
+model AuditProductCreation {
+  id          Int      @id @default(autoincrement())
+  productId   Int
+  product     Product  @relation(fields: [productId], references: [id])
+  createdAt   DateTime @default(now())
+  createdById Int
+  createdBy   User     @relation(fields: [createdById], references: [id])
+}
+
+model AuditProductEdit {
+  id                Int      @id @default(autoincrement())
+  productId         Int
+  product           Product  @relation(fields: [productId], references: [id])
+  createdAt         DateTime @default(now())
+  modifiedById      Int
+  modifiedBy        User     @relation(fields: [modifiedById], references: [id])
+  nameBefore        String?
+  nameAfter         String?
+  descriptionBefore String?
+  descriptionAfter  String?
+}
